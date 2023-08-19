@@ -16,10 +16,21 @@ export default {
     localhost: {
       url: 'http://127.0.0.1:8545',
     },
+    hardhat: {
+      blockGasLimit: 100000000429720, // whatever you want here
+    },
   },
+  allowUnlimitedContractSize: true,
   solidity: {
     compilers: hardhatBaseConfig.compilers,
+    // version: '0.7.1',
     overrides: { ...hardhatBaseConfig.overrides(name) },
+    // setting: {
+    //   optimizer: {
+    //     enabled: true,
+    //     runs: 20,
+    //   },
+    // },
   },
   warnings: hardhatBaseConfig.warnings,
 };
