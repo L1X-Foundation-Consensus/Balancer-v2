@@ -39,6 +39,7 @@ async function main() {
     vaultParams.bufferPeriodDuration,
     { gasLimit: 30000000 }
   );
+
   console.log('Contract vault deployed to:', vault.address);
 
   /* Deploy 2 ERC-20 token contracts */
