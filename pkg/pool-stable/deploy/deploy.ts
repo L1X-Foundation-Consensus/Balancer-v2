@@ -233,7 +233,7 @@ async function main() {
     [erc20.address, erc202.address].sort(),
     8, // amplificationParameter,
     [rateProvider.address, rateProvider2.address].sort(),
-    [3600, 3600], //uint256[] memory tokenRateCacheDurations,
+    [100, 3600], //uint256[] memory tokenRateCacheDurations,
     [false, false], // bool[] memory exemptFromYieldProtocolFeeFlags,
     BigInt('10000000000000000'), //uint256 swapFeePercentage,
     '0x177f88827a0d1fb1f10c44743be61dada9fdb318', //address owner,
@@ -256,10 +256,10 @@ async function main() {
     rateProviders: [rateProvider.address, rateProvider2.address],
     tokenRateCacheDurations: [0, 0],
     exemptFromYieldProtocolFeeFlags: [false, false],
-    amplificationParameter: 10,
-    swapFeePercentage: BigInt('10000000000000000').toString(),
-    pauseWindowDuration: 100,
-    bufferPeriodDuration: 200,
+    amplificationParameter: BigInt('1'),
+    swapFeePercentage: BigInt('10000000000000000'),
+    pauseWindowDuration: 0,
+    bufferPeriodDuration: 0,
     owner: deployer.address,
     version: '1.0.0',
   };
@@ -289,15 +289,26 @@ async function main() {
     './creationCode/creationCodePool.txt',
     ContractFactory.bytecode.substring(2) + encodedParams5.slice(2)
   );
-  const contract = (await ContractFactory.deploy(poolParams, { gasLimit: 30000000 })) as ComposableStablePool;
+  const contract = await ContractFactory.deploy(poolParams, { gasLimit: 30000000 });
   console.log('Contract deployed to:', contract.address);
   const runtimeBytecode = await ethers.provider.getCode(contract.address);
   fs.writeFileSync('./runtimeCode/runtimeBytecode.txt', runtimeBytecode.substring(2));
   const poolId = await contract.getPoolId();
   const poolId2 = await xx.getPoolId();
-  await erc20.connect(deployer).approve(vault.address, ethers.utils.parseEther('1000000000'));
-  await erc202.connect(deployer).approve(vault.address, ethers.utils.parseEther('1000000000'));
-  const tokenInfo = await vault.getPoolTokens(poolId);
+  await erc20.approve(vault.address, ethers.utils.parseEther('1000000000'));
+  await erc202.approve(vault.address, ethers.utils.parseEther('1000000000'));
+  const allow = await erc20.allowance(deployer.address, vault.address);
+  const allow1 = await erc202.allowance(deployer.address, vault.address);
+  console.log('allow', allow);
+  console.log('allow1', allow);
+
+  const poolDetails = await vault.getPool(poolId);
+  console.log(poolDetails);
+
+  await vault.setRelayerApproval(deployer.address, deployer.address, true);
+
+  console.log('token info', await vault.getPoolTokenInfo(poolId, erc20.address));
+  let tokenInfo = await vault.getPoolTokens(poolId);
   const tokenInfo2 = await vault.getPoolTokens(poolId2);
 
   const getpool = await vault.getPool(poolId);
@@ -305,24 +316,70 @@ async function main() {
   console.log(tokenInfo[0]);
   // console.log(tokenInfo2);
   // get pool id from contract
-  const amountsIn = Array(tokenInfo[0].length).fill(BigNumber.from('1000000000'));
-  const tokens = [erc20.address, contract.address, erc202.address];
-  // const amountsIn = [BigNumber.from('100000000000')];
+  let amountsIn = [];
+  for (let i = 0; i < tokenInfo[0].length; i++) {
+    if (tokenInfo[0][i] == contract.address) {
+      amountsIn.push(ethers.utils.parseEther('10000000'));
+    } else {
+      amountsIn.push(ethers.utils.parseEther('10000000'));
+    }
+  }
+  console.log('amount', amountsIn);
+  const tokens = [erc20.address, erc202.address];
+  // const amountsIn = [BigNumber.from('100000000000',),BigNumber.from('0')];
   console.log(StablePoolEncoder.joinInit(amountsIn));
 
   // const { tokens: allTokens } = await vault.getPoolTokens(poolId);
 
   // ComposableStablePool needs BPT in the initialize userData but ManagedPool doesn't.
 
-  const tx = await vault.connect(deployer).joinPool(poolId, deployer.address, deployer.address, {
+  const txJoin = await vault.joinPool(poolId, deployer.address, deployer.address, {
     assets: tokenInfo[0],
-    maxAmountsIn: amountsIn,
+    maxAmountsIn: [
+      ethers.utils.parseEther('10000000000000000'),
+      ethers.utils.parseEther('10000000000000000'),
+      ethers.utils.parseEther('10000000000000000'),
+    ],
     fromInternalBalance: false,
     userData: StablePoolEncoder.joinInit(amountsIn),
   });
-  console.log(tx);
+  console.log(await txJoin.wait);
+  tokenInfo = await vault.getPoolTokens(poolId);
+  console.log(tokenInfo);
+  console.log('bpt balance', await contract.balanceOf(deployer.address));
 
-  console.log('pool id', poolId);
+  console.log('erc20 balance', await erc20.balanceOf(deployer.address));
+  console.log('erc202 balance', await erc202.balanceOf(deployer.address));
+
+  // amountsIn = [];
+  // for (let i = 0; i < tokenInfo[0].length; i++) {
+  //   if (tokenInfo[0][i] == contract.address) {
+  //     amountsIn.push(ethers.utils.parseEther('1000'));
+  //   } else {
+  //     amountsIn.push(ethers.utils.parseEther('1000'));
+  //   }
+  // }
+  // const txJoin1 = await vault.joinPool(poolId, deployer.address, deployer.address, {
+  //   assets: [erc20.address, erc202.address],
+  //   maxAmountsIn: [ethers.utils.parseEther('10000000000000000'), ethers.utils.parseEther('10000000000000000')],
+  //   fromInternalBalance: false,
+  //   userData: StablePoolEncoder.joinExactTokensInForBPTOut([ethers.utils.parseEther('10000'), ethers.utils.parseEther('10000')], ethers.utils.parseEther('100')),
+  // });
+  // console.log(await txJoin.wait);
+
+  const txExit = await vault.exitPool(poolId, deployer.address, deployer.address, {
+    assets: tokenInfo[0],
+    minAmountsOut: [ethers.utils.parseEther('0'), ethers.utils.parseEther('0'), ethers.utils.parseEther('0')],
+    userData: StablePoolEncoder.exitExactBptInForTokensOut(ethers.utils.parseEther('10000000')),
+    toInternalBalance: false,
+  });
+  console.log(await txExit.await);
+  tokenInfo = await vault.getPoolTokens(poolId);
+  console.log(tokenInfo);
+  console.log('bpt balance', await contract.balanceOf(deployer.address));
+
+  console.log('erc20 balance', await erc20.balanceOf(deployer.address));
+  console.log('erc202 balance', await erc202.balanceOf(deployer.address));
 }
 
 main()
