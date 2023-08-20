@@ -1,5 +1,6 @@
-import { WeightedPoolEncoder } from '@balancer-labs/balancer-js';
+import { SwapKind, WeightedPoolEncoder } from '@balancer-labs/balancer-js';
 import { StablePoolEncoder } from '@balancer-labs/balancer-js/src/pool-stable/encoder';
+import { MAX_UINT256 } from '@balancer-labs/v2-helpers/src/constants';
 import { fp } from '@balancer-labs/v2-helpers/src/numbers';
 import { BigNumber } from 'ethers';
 
@@ -351,6 +352,30 @@ async function main() {
   console.log('erc20 balance', await erc20.balanceOf(deployer.address));
   console.log('erc202 balance', await erc202.balanceOf(deployer.address));
 
+  const swap = await vault.swap(
+    {
+      kind: SwapKind.GivenIn,
+      poolId,
+      assetIn: erc20.address,
+      assetOut: erc202.address,
+      amount:       ethers.utils.parseEther('1000'),
+    
+      userData: '0x',
+    },
+    {
+      sender: deployer.address,
+      recipient: deployer.address,
+      fromInternalBalance: false,
+      toInternalBalance: false,
+    },
+    0,
+    MAX_UINT256
+  );
+  await swap.wait();
+  console.log('after swap bpt balance', await contract.balanceOf(deployer.address));
+
+  console.log('after swap erc20 balance', await erc20.balanceOf(deployer.address));
+  console.log('after swap erc202 balance', await erc202.balanceOf(deployer.address));
   // amountsIn = [];
   // for (let i = 0; i < tokenInfo[0].length; i++) {
   //   if (tokenInfo[0][i] == contract.address) {
@@ -377,7 +402,6 @@ async function main() {
   tokenInfo = await vault.getPoolTokens(poolId);
   console.log(tokenInfo);
   console.log('bpt balance', await contract.balanceOf(deployer.address));
-
   console.log('erc20 balance', await erc20.balanceOf(deployer.address));
   console.log('erc202 balance', await erc202.balanceOf(deployer.address));
 }
