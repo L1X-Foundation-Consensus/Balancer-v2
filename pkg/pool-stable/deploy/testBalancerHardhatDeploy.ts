@@ -1,6 +1,8 @@
 import { StablePoolEncoder } from '@balancer-labs/balancer-js/src/pool-stable/encoder';
+import { SwapKind } from '@balancer-labs/balancer-js';
 import { Contract } from 'ethers';
 import TokenList from '@balancer-labs/v2-helpers/src/models/tokens/TokenList';
+import { MAX_UINT256 } from '@balancer-labs/v2-helpers/src/constants';
 
 const { ethers } = require('hardhat');
 const fs = require('fs');
@@ -109,7 +111,7 @@ async function main() {
   console.log('Amounts In: ', amountsIn);
 
   /* Join Pool */
-  await vault.connect(deployer).joinPool(poolId, deployer.address, deployer.address, {
+  const txJoin = await vault.connect(deployer).joinPool(poolId, deployer.address, deployer.address, {
     assets: tokenInfo[0],
     maxAmountsIn: [
       ethers.utils.parseEther('10000000000000000'),
@@ -119,6 +121,7 @@ async function main() {
     fromInternalBalance: false,
     userData: StablePoolEncoder.joinInit(amountsIn),
   });
+  await txJoin.wait();
   tokenInfo = await vault.getPoolTokens(poolId);
   console.log('Tokens Info:', tokenInfo);
 
@@ -126,13 +129,42 @@ async function main() {
   console.log('DAI balance', await allTokens.DAI.balanceOf(deployer.address));
   console.log('BAT balance', await allTokens.BAT.balanceOf(deployer.address));
 
+  /* Swap Pool */
+  const txSwap = await vault.swap(
+    {
+      kind: SwapKind.GivenIn,
+      poolId,
+      assetIn: allTokens.DAI.address,
+      assetOut: allTokens.BAT.address,
+      amount: ethers.utils.parseEther('1000'),
+
+      userData: '0x',
+    },
+    {
+      sender: deployer.address,
+      recipient: deployer.address,
+      fromInternalBalance: false,
+      toInternalBalance: false,
+    },
+    0,
+    MAX_UINT256
+  );
+  await txSwap.wait();
+  tokenInfo = await vault.getPoolTokens(poolId);
+  console.log('Tokens Info:', tokenInfo);
+
+  console.log('After swap bpt balance', await poolContract.balanceOf(deployer.address));
+  console.log('After swap DAI balance', await allTokens.DAI.balanceOf(deployer.address));
+  console.log('After swap BAT balance', await allTokens.BAT.balanceOf(deployer.address));
+
   /* Exit Pool */
-  await vault.exitPool(poolId, deployer.address, deployer.address, {
+  const txExit = await vault.exitPool(poolId, deployer.address, deployer.address, {
     assets: tokenInfo[0],
     minAmountsOut: [ethers.utils.parseEther('0'), ethers.utils.parseEther('0'), ethers.utils.parseEther('0')],
     userData: StablePoolEncoder.exitExactBptInForTokensOut(ethers.utils.parseEther('10000000')),
     toInternalBalance: false,
   });
+  await txExit.wait();
   tokenInfo = await vault.getPoolTokens(poolId);
   console.log('Tokens Info:', tokenInfo);
 
