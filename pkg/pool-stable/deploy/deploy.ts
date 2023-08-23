@@ -2,8 +2,6 @@ import { SwapKind, WeightedPoolEncoder } from '@balancer-labs/balancer-js';
 import { StablePoolEncoder } from '@balancer-labs/balancer-js/src/pool-stable/encoder';
 import { MAX_UINT256 } from '@balancer-labs/v2-helpers/src/constants';
 import { fp } from '@balancer-labs/v2-helpers/src/numbers';
-import { BigNumber } from 'ethers';
-
 const { ethers } = require('hardhat');
 const fs = require('fs');
 
@@ -14,10 +12,10 @@ async function main() {
   console.log('Deploying contracts with the account:', deployer.address);
   const erc20Factory = await ethers.getContractFactory('MYERC20');
   const erc20Params = {
-    _name: 'Test Token',
-    _symbol: 'TST',
+    _name: 'USDT Token',
+    _symbol: 'USDT',
     _decimals: 18,
-    initialSupply: ethers.utils.parseEther('1000000000'),
+    initialSupply: ethers.utils.parseUnits('1000000000', 0),
   };
   console.log(ethers.utils.parseEther('1000000000'));
   const erc20 = await erc20Factory.deploy(
@@ -41,10 +39,10 @@ async function main() {
 
   console.log('Contract 201 deployed to:', erc20.address);
   const erc20Params2 = {
-    _name: 'Test Token 2',
-    _symbol: 'TST2',
+    _name: 'USDC Token',
+    _symbol: 'USDC',
     _decimals: 18,
-    initialSupply: ethers.utils.parseEther('1000000000'),
+    initialSupply: ethers.utils.parseUnits('1000000000', 0),
   };
   const erc202 = await erc20Factory.deploy(
     erc20Params2.initialSupply,
@@ -132,8 +130,8 @@ async function main() {
   console.log('Contract vault deployed to:', vault.address);
 
   const encodedParams3 = VaultFactory.interface.encodeDeploy([
-    '0xcc60fc66d6d841edcfbadf94cd76fb0957d7993d', // change it if you deploy new authorizer
-    '0xe9aa76ec04aab17717f2cfe51c4093a0dd41cfdb', // change it if you deploy new weth
+    '0xbcb00c2448ddd39b014f580265048404332e2b62', // change it if you deploy new authorizer
+    '0x12d887b29efa461b85afe8404b8e3ed29ce23af8', // change it if you deploy new weth
     vaultParams.pauseWindowDuration,
     vaultParams.bufferPeriodDuration,
   ]);
@@ -147,7 +145,7 @@ async function main() {
   });
   console.log('Contract protovol fee deployed to:', protocolFeePercentagesProvider.address);
   const encodedParams4 = ProtocolFeePercentagesProviderFactory.interface.encodeDeploy([
-    '0xbf869069e8f4cf847ae6e49080ef2f1f0effc750', // Once you deply the new vault, update the protocol fee with vault
+    '0x00cde552e7f12ca7fae52235e3a3362b9b0abe88', // Once you deply the new vault, update the protocol fee with vault
     100,
     200,
   ]);
@@ -256,18 +254,16 @@ async function main() {
     [rateProvider.address, rateProvider2.address].sort(),
     [0, 0], //uint256[] memory tokenRateCacheDurations,
     [false, false], // bool[] memory exemptFromYieldProtocolFeeFlags,
-    BigInt('10000000000000000'), //uint256 swapFeePercentage,
+    fp(0.1), //uint256 swapFeePercentage,
     '0x75104938baa47c54a86004ef998cc76c2e616289', //address owner,
     // make 1 to bytes32
     ethers.utils.formatBytes32String('1')
   ); //bytes32 salt))
 
-  console.log(createPool);
   const res = await createPool.wait();
 
   const events = res.events?.filter((e) => e.event && e.event === 'PoolCreated');
   const xx = await ethers.getContractAt('ComposableStablePool', events[0].args[0]);
-  console.log('', await xx.getPoolId());
   console.log('Contract createPool deployed to:', events[0].args[0]);
   const poolParams = {
     vault: vault.address,
@@ -279,28 +275,29 @@ async function main() {
     tokenRateCacheDurations: [0, 0],
     exemptFromYieldProtocolFeeFlags: [false, false],
     amplificationParameter: BigInt('1'),
-    swapFeePercentage: BigInt('10000000000000000'),
+    swapFeePercentage: fp(0.1),
     pauseWindowDuration: 0,
     bufferPeriodDuration: 0,
     owner: deployer.address,
     version: '1.0.0',
   };
   const ContractFactory = await ethers.getContractFactory('ComposableStablePool');
-  const encodedParams5 = ContractFactory.interface.encodeDeploy([ // for deploying new stable pool directly
+  const encodedParams5 = ContractFactory.interface.encodeDeploy([
+    // for deploying new stable pool directly
     {
-      vault: '0xbf869069e8f4cf847ae6e49080ef2f1f0effc750', // change
-      protocolFeeProvider: '0x7d34d48aa5b739d1c64e0298997791d1599b080e', // change
+      vault: '0x00cde552e7f12ca7fae52235e3a3362b9b0abe88', // change
+      protocolFeeProvider: '0x588c23b9752a384df6dce52be319a6908c812c8f', // change
       name: 'My Stable Pool',
       symbol: 'MSP',
-      tokens: ['0x18bb9d765b6d607638b80046a9f718979f83ad77', '0xf72341419f2dbd1b9cd5b57d3b5ce6ec1f2ea2b8'].sort(), // change
+      tokens: ['0x353ba32bef6809ffcf03f09fcdc9695aef34965d', '0xabe572240a6917e4a69e9154159baf02be8f7ee3'].sort(), // change
       rateProviders: [
-        '0x413a64f6b6443b1f199c4414d0d7bfa0f405b3a5', // change
-        '0x99516987760b4d296a69b7dfe648b5548e86566f', // change
+        '0x42b1ed29a1c2cd2dbb367a1a6242fc84f3ba6d06', // change
+        '0x79e29912f7c12afc4aa90fdf7dc6290c7ff7f7d6', // change
       ].sort(),
       tokenRateCacheDurations: [0, 0],
       exemptFromYieldProtocolFeeFlags: [false, false],
       amplificationParameter: BigInt('1'),
-      swapFeePercentage: BigInt('10000000000000000'),
+      swapFeePercentage: fp(0.1),
       pauseWindowDuration: 0,
       bufferPeriodDuration: 0,
       owner: '0x75104938baa47c54a86004ef998cc76c2e616111',
@@ -319,55 +316,48 @@ async function main() {
   const poolId2 = await xx.getPoolId();
   console.log('pool id', poolId);
   console.log('pool id', poolId2);
-  await erc20.approve(vault.address, ethers.utils.parseEther('100000000000000000000000000000000000000'));
+  await erc20.approve(vault.address, ethers.utils.parseEther('1000000000'));
   await erc202.approve(vault.address, ethers.utils.parseEther('1000000000'));
+  console.log(' erc20 balance', await erc20.balanceOf(deployer.address));
+  console.log(' erc202 balance', await erc202.balanceOf(deployer.address));
   const allow = await erc20.allowance(deployer.address, vault.address);
   const allow1 = await erc202.allowance(deployer.address, vault.address);
   console.log('allow', allow);
   console.log('allow1', allow1);
 
   const poolDetails = await vault.getPool(poolId);
-  console.log(poolDetails);
-
   // await vault.setRelayerApproval(deployer.address, deployer.address, true);
 
-  console.log('token info', await vault.getPoolTokenInfo(poolId, erc20.address));
-  // let tokenInfo = await vault.getPoolTokens(poolId);
-  let tokenInfo = [
-    [
-      '0x18bb9d765b6d607638b80046a9f718979f83ad77',
-      '0x5c45c337bd380aeaa5fd29fda0581434274c532d',
-      '0xf72341419f2dbd1b9cd5b57d3b5ce6ec1f2ea2b8',
-    ],
+  // console.log('token info', await vault.getPoolTokenInfo(poolId, erc20.address));
+  let tokenInfo = await vault.getPoolTokens(poolId);
+  // let tokenInfo = [
+  //   [
+  //     '0x18bb9d765b6d607638b80046a9f718979f83ad77',
+  //     '0x5c45c337bd380aeaa5fd29fda0581434274c532d',
+  //     '0xf72341419f2dbd1b9cd5b57d3b5ce6ec1f2ea2b8',
+  //   ],
 
-  ]; // get pool id from pool contract, get it by using getPoolToken(pool id) from vault, 
+  // ]; // get pool id from pool contract, get it by using getPoolToken(pool id) from vault,
   const tokenInfo2 = await vault.getPoolTokens(poolId2);
 
   const getpool = await vault.getPool(poolId);
   console.log('get pool', getpool);
-  console.log(tokenInfo[0]);
+  console.log('pool token address', tokenInfo[0]);
   // console.log(tokenInfo2);
   // get pool id from contract
   let amountsIn = [];
   for (let i = 0; i < tokenInfo[0].length; i++) {
     if (tokenInfo[0][i] == contract.address) {
-      amountsIn.push(ethers.utils.parseEther('10000000'));
+      amountsIn.push(ethers.utils.parseUnits('500000000', 18));
     } else {
-      amountsIn.push(ethers.utils.parseEther('10000000'));
+      amountsIn.push(ethers.utils.parseUnits('500000000', 18));
     }
   }
-  console.log('amount', amountsIn);
-  // const amountsIn = [BigNumber.from('100000000000',),BigNumber.from('0')];
-  console.log(StablePoolEncoder.joinInit(amountsIn));
-
-  // const { tokens: allTokens } = await vault.getPoolTokens(poolId);
-
-  // ComposableStablePool needs BPT in the initialize userData but ManagedPool doesn't.
 
   const txJoin = await vault.joinPool(
-    '0x91c0eb5c5a45997a7c4629efe15629b2af53b0a4000000000000000000000000',// pool id 
-    alice,
-    alice,
+    poolId, // pool id
+    deployer.address,
+    deployer.address,
     {
       assets: tokenInfo[0],
       maxAmountsIn: [
@@ -381,7 +371,7 @@ async function main() {
   );
   console.log(await txJoin.wait);
   tokenInfo = await vault.getPoolTokens(poolId);
-  console.log(tokenInfo);
+  console.log('pool balance', tokenInfo[1]);
   console.log('bpt balance', await contract.balanceOf(deployer.address));
 
   console.log('erc20 balance', await erc20.balanceOf(deployer.address));
@@ -393,7 +383,7 @@ async function main() {
       poolId,
       assetIn: erc20.address,
       assetOut: erc202.address,
-      amount: ethers.utils.parseEther('1000'),
+      amount: ethers.utils.parseUnits('10', 18),
 
       userData: '0x',
     },
@@ -407,6 +397,8 @@ async function main() {
     MAX_UINT256
   );
   await swap.wait();
+  tokenInfo = await vault.getPoolTokens(poolId);
+  console.log('pool balance after swap', tokenInfo[1]);
   console.log('after swap bpt balance', await contract.balanceOf(deployer.address));
 
   console.log('after swap erc20 balance', await erc20.balanceOf(deployer.address));
@@ -430,7 +422,7 @@ async function main() {
   const txExit = await vault.exitPool(poolId, deployer.address, deployer.address, {
     assets: tokenInfo[0],
     minAmountsOut: [ethers.utils.parseEther('0'), ethers.utils.parseEther('0'), ethers.utils.parseEther('0')],
-    userData: StablePoolEncoder.exitExactBptInForTokensOut(ethers.utils.parseEther('10000000')),
+    userData: StablePoolEncoder.exitExactBptInForTokensOut(ethers.utils.parseEther('100000000')),
     toInternalBalance: false,
   });
   console.log(await txExit.await);
