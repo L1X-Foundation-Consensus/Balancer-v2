@@ -304,7 +304,7 @@ async function main() {
       pauseWindowDuration: 0,
       bufferPeriodDuration: 0,
       owner: '0x75104938baa47c54a86004ef998cc76c2e616289',
-      version: 3,
+      version: '1.0.0',
     },
   ]);
   fs.writeFileSync(
