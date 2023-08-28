@@ -1,14 +1,17 @@
 import { SwapKind, WeightedPoolEncoder } from '@balancer-labs/balancer-js';
 import { StablePoolEncoder } from '@balancer-labs/balancer-js/src/pool-stable/encoder';
 import { MAX_UINT256 } from '@balancer-labs/v2-helpers/src/constants';
-import { fp } from '@balancer-labs/v2-helpers/src/numbers';
+import { BigNumber, BigNumberish, fp } from '@balancer-labs/v2-helpers/src/numbers';
 const { ethers } = require('hardhat');
 const fs = require('fs');
 
 // give me random address
 const alice = '0x75104938baa47c54a86004ef998cc76c2e616289';
 async function main() {
-  const [deployer] = await ethers.getSigners();
+  const signers = await ethers.getSigners();
+  const deployer = signers[0];
+  const bob = signers[1];
+  const charlie = signers[2];
   console.log('Deploying contracts with the account:', deployer.address);
   const erc20Factory = await ethers.getContractFactory('MYERC20');
   const erc20Params = {
@@ -17,7 +20,7 @@ async function main() {
     _decimals: 18,
     initialSupply: ethers.utils.parseUnits('1000000000', 0),
   };
-  console.log(ethers.utils.parseEther('1000000000'));
+  console.log(bignumberToNumber(ethers.utils.parseEther('1000000000')));
   const erc20 = await erc20Factory.deploy(
     erc20Params.initialSupply,
     erc20Params._name,
@@ -130,8 +133,8 @@ async function main() {
   console.log('Contract vault deployed to:', vault.address);
 
   const encodedParams3 = VaultFactory.interface.encodeDeploy([
-    '0xbcb00c2448ddd39b014f580265048404332e2b62', // change it if you deploy new authorizer
-    '0x12d887b29efa461b85afe8404b8e3ed29ce23af8', // change it if you deploy new weth
+    '0x98f5708a5e6ef3e03cbf7f3913baf7596cb06f78', // change it if you deploy new authorizer
+    '0x75efbcee8c37849b63287a1fcd367368a5f0ab80', // change it if you deploy new weth
     vaultParams.pauseWindowDuration,
     vaultParams.bufferPeriodDuration,
   ]);
@@ -145,7 +148,7 @@ async function main() {
   });
   console.log('Contract protovol fee deployed to:', protocolFeePercentagesProvider.address);
   const encodedParams4 = ProtocolFeePercentagesProviderFactory.interface.encodeDeploy([
-    '0x00cde552e7f12ca7fae52235e3a3362b9b0abe88', // Once you deply the new vault, update the protocol fee with vault
+    '0x7ba9268c354b2f0156abdec86ca0ac8e8135673f', // Once you deply the new vault, update the protocol fee with vault
     100,
     200,
   ]);
@@ -285,14 +288,14 @@ async function main() {
   const encodedParams5 = ContractFactory.interface.encodeDeploy([
     // for deploying new stable pool directly
     {
-      vault: '0x00cde552e7f12ca7fae52235e3a3362b9b0abe88', // change
-      protocolFeeProvider: '0x588c23b9752a384df6dce52be319a6908c812c8f', // change
-      name: 'My Stable Pool',
-      symbol: 'MSP',
-      tokens: ['0x353ba32bef6809ffcf03f09fcdc9695aef34965d', '0xabe572240a6917e4a69e9154159baf02be8f7ee3'].sort(), // change
+      vault: '0x7ba9268c354b2f0156abdec86ca0ac8e8135673f', // change
+      protocolFeeProvider: '0xeda67b104377ffa4e7af8d97503e06dddbb24cdf', // change
+      name: 'USDT-USDC',
+      symbol: 'TC',
+      tokens: ['0x98c16b40e86648ddfa73ac8d1730792ab735b457', '0xa7afd0642cfcadacaee88cdf2b84711a1b11d025'].sort(), // change
       rateProviders: [
-        '0x42b1ed29a1c2cd2dbb367a1a6242fc84f3ba6d06', // change
-        '0x79e29912f7c12afc4aa90fdf7dc6290c7ff7f7d6', // change
+        '0x10e32d5cdd1122cf506575702f12b66f0d9ac80b', // change
+        '0x6c11eee685845d7decb59802ba64f11acb008470', // change
       ].sort(),
       tokenRateCacheDurations: [0, 0],
       exemptFromYieldProtocolFeeFlags: [false, false],
@@ -300,8 +303,8 @@ async function main() {
       swapFeePercentage: fp(0.1),
       pauseWindowDuration: 0,
       bufferPeriodDuration: 0,
-      owner: '0x75104938baa47c54a86004ef998cc76c2e616111',
-      version: '1.0.0',
+      owner: '0x75104938baa47c54a86004ef998cc76c2e616289',
+      version: 3,
     },
   ]);
   fs.writeFileSync(
@@ -318,26 +321,19 @@ async function main() {
   console.log('pool id', poolId2);
   await erc20.approve(vault.address, ethers.utils.parseEther('1000000000'));
   await erc202.approve(vault.address, ethers.utils.parseEther('1000000000'));
-  console.log(' erc20 balance', await erc20.balanceOf(deployer.address));
-  console.log(' erc202 balance', await erc202.balanceOf(deployer.address));
+  console.log(' erc20 balance', bignumberToNumber(await erc20.balanceOf(deployer.address)));
+  console.log(' erc202 balance', bignumberToNumber(await erc202.balanceOf(deployer.address)));
   const allow = await erc20.allowance(deployer.address, vault.address);
   const allow1 = await erc202.allowance(deployer.address, vault.address);
-  console.log('allow', allow);
-  console.log('allow1', allow1);
+  console.log('allow', bignumberToNumber(allow));
+  console.log('allow1', bignumberToNumber(allow1));
 
   const poolDetails = await vault.getPool(poolId);
   // await vault.setRelayerApproval(deployer.address, deployer.address, true);
 
   // console.log('token info', await vault.getPoolTokenInfo(poolId, erc20.address));
   let tokenInfo = await vault.getPoolTokens(poolId);
-  // let tokenInfo = [
-  //   [
-  //     '0x18bb9d765b6d607638b80046a9f718979f83ad77',
-  //     '0x5c45c337bd380aeaa5fd29fda0581434274c532d',
-  //     '0xf72341419f2dbd1b9cd5b57d3b5ce6ec1f2ea2b8',
-  //   ],
 
-  // ]; // get pool id from pool contract, get it by using getPoolToken(pool id) from vault,
   const tokenInfo2 = await vault.getPoolTokens(poolId2);
 
   const getpool = await vault.getPool(poolId);
@@ -369,13 +365,66 @@ async function main() {
       userData: StablePoolEncoder.joinInit(amountsIn),
     }
   );
+  await txJoin.wait();
+
+  // transfer erc20 to bob
+  await erc20.transfer(bob.address, ethers.utils.parseEther('1000000'));
+  await erc202.transfer(bob.address, ethers.utils.parseEther('1000000'));
+
+  await erc20.connect(bob).approve(vault.address, ethers.utils.parseEther('100000'));
+  await erc202.connect(bob).approve(vault.address, ethers.utils.parseEther('100000'));
+  console.log('bob balance', bignumberToNumber(await erc20.balanceOf(bob.address)));
+  console.log('bob balance', bignumberToNumber(await erc202.balanceOf(bob.address)));
+  console.log('bpt bob balance', bignumberToNumber(await contract.balanceOf(bob.address)));
+  const allowbob = await erc20.allowance(bob.address, vault.address);
+  const allowbob1 = await erc202.allowance(bob.address, vault.address);
+  console.log('bob allow', bignumberToNumber(allowbob));
+  console.log('bob allow1', bignumberToNumber(allowbob1));
+
+  // tokenInfo = [
+  //   [
+  //     '0x12e885fcc6be41f25f3793e6e0b5cdb845f6a87e',
+  //     '0x98c16b40e86648ddfa73ac8d1730792ab735b457',
+  //     '0xa7afd0642cfcadacaee88cdf2b84711a1b11d025',
+  //   ],
+  // ]; // get pool id from pool contract, get it by using getPoolToken(pool id) from vault,
+  let amountsInBob = [];
+  let tokenInfoBob = [];
+  let max = [];
+
+  for (let i = 0; i < tokenInfo[0].length; i++) {
+    if (tokenInfo[0][i] != contract.address) {
+      tokenInfoBob.push(tokenInfo[0][i]);
+      amountsInBob.push(ethers.utils.parseUnits('1000', 18));
+      max.push(MAX_UINT256);
+    } else {
+      tokenInfoBob.push(tokenInfo[0][i]);
+      max.push(0);
+    }
+  }
+  console.log(tokenInfo[0], tokenInfoBob, amountsInBob);
+  const txJoinBob = await vault.connect(bob).joinPool(
+    poolId, // pool id
+    bob.address,
+    bob.address,
+    {
+      assets: tokenInfoBob,
+      maxAmountsIn: max,
+      fromInternalBalance: false,
+      userData: StablePoolEncoder.joinExactTokensInForBPTOut(amountsInBob, 0),
+    }
+  );
+  console.log('bob balance', bignumberToNumber(await erc20.balanceOf(bob.address)));
+  console.log('bob balance', bignumberToNumber(await erc202.balanceOf(bob.address)));
+  console.log('bpt bob balance', bignumberToNumber(await contract.balanceOf(bob.address)));
   console.log(await txJoin.wait);
   tokenInfo = await vault.getPoolTokens(poolId);
-  console.log('pool balance', tokenInfo[1]);
-  console.log('bpt balance', await contract.balanceOf(deployer.address));
 
-  console.log('erc20 balance', await erc20.balanceOf(deployer.address));
-  console.log('erc202 balance', await erc202.balanceOf(deployer.address));
+  console.log('pool balance', tokenInfo[1]);
+  console.log('bpt balance', bignumberToNumber(await contract.balanceOf(deployer.address)));
+
+  console.log('erc20 balance', bignumberToNumber(await erc20.balanceOf(deployer.address)));
+  console.log('erc202 balance', bignumberToNumber(await erc202.balanceOf(deployer.address)));
 
   const swap = await vault.swap(
     {
@@ -399,10 +448,10 @@ async function main() {
   await swap.wait();
   tokenInfo = await vault.getPoolTokens(poolId);
   console.log('pool balance after swap', tokenInfo[1]);
-  console.log('after swap bpt balance', await contract.balanceOf(deployer.address));
+  console.log('after swap bpt balance', bignumberToNumber(await contract.balanceOf(deployer.address)));
 
-  console.log('after swap erc20 balance', await erc20.balanceOf(deployer.address));
-  console.log('after swap erc202 balance', await erc202.balanceOf(deployer.address));
+  console.log('after swap erc20 balance', bignumberToNumber(await erc20.balanceOf(deployer.address)));
+  console.log('after swap erc202 balance', bignumberToNumber(await erc202.balanceOf(deployer.address)));
   // amountsIn = [];
   // for (let i = 0; i < tokenInfo[0].length; i++) {
   //   if (tokenInfo[0][i] == contract.address) {
@@ -428,9 +477,9 @@ async function main() {
   console.log(await txExit.await);
   tokenInfo = await vault.getPoolTokens(poolId);
   console.log(tokenInfo);
-  console.log('bpt balance', await contract.balanceOf(deployer.address));
-  console.log('erc20 balance', await erc20.balanceOf(deployer.address));
-  console.log('erc202 balance', await erc202.balanceOf(deployer.address));
+  console.log('bpt balance', bignumberToNumber(await contract.balanceOf(deployer.address)));
+  console.log('erc20 balance', bignumberToNumber(await erc20.balanceOf(deployer.address)));
+  console.log('erc202 balance', bignumberToNumber(await erc202.balanceOf(deployer.address)));
 }
 
 main()
@@ -446,4 +495,18 @@ function toBytes32(num: any) {
     hex = '0' + hex;
   }
   return '0x' + hex;
+}
+
+function bignumberToNumber(num: any) {
+  return num.div(ethers.BigNumber.from(10).pow(18)).toNumber();
+}
+
+export const CHAINED_REFERENCE_TEMP_PREFIX = 'ba10'; // Temporary reference: it is deleted after a read.
+export const CHAINED_REFERENCE_READONLY_PREFIX = 'ba11'; // Read-only reference: it is not deleted after a read.
+export function toChainedReference(key: BigNumberish, isTemporary = true): BigNumber {
+  const prefix = isTemporary ? CHAINED_REFERENCE_TEMP_PREFIX : CHAINED_REFERENCE_READONLY_PREFIX;
+  // The full padded prefix is 66 characters long, with 64 hex characters and the 0x prefix.
+  const paddedPrefix = `0x${prefix}${'0'.repeat(64 - prefix.length)}`;
+
+  return BigNumber.from(paddedPrefix).add(key);
 }

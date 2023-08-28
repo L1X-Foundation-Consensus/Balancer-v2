@@ -3,7 +3,6 @@ pragma solidity ^0.7.0;
 import "@balancer-labs/v2-interfaces/contracts/solidity-utils/openzeppelin/IERC20.sol";
 
 contract MYERC20 is IERC20 {
-    
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -11,6 +10,12 @@ contract MYERC20 is IERC20 {
     mapping(address => uint256) balances;
     mapping(address => mapping(address => uint256)) allowed;
     uint256 totalSupply_;
+    address public owner;
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Not contract from");
+        _;
+    }
 
     constructor(
         uint256 initialSupply,
@@ -23,11 +28,31 @@ contract MYERC20 is IERC20 {
         decimals = _decimals;
         totalSupply_ = initialSupply * (10**uint256(decimals));
         balances[msg.sender] = totalSupply_;
+        owner = msg.sender;
         emit Transfer(address(0), msg.sender, totalSupply_);
     }
 
     function totalSupply() public view override returns (uint256) {
         return totalSupply_;
+    }
+
+    function changeOwner(address newOwner) public onlyOwner {
+        owner = newOwner;
+    }
+
+    function mint(address account, uint256 amount) public onlyOwner {
+        require(account != address(0), "ERC20: mint to the zero address");
+        totalSupply_ = totalSupply_ + amount;
+        balances[account] = balances[account] + amount;
+        emit Transfer(address(0), account, amount);
+    }
+
+    function burn(address account, uint256 amount) public onlyOwner {
+        require(account != address(0), "ERC20: burn from the zero address");
+        require(balances[account] >= amount, "ERC20: burn amount exceeds balance");
+        totalSupply_ = totalSupply_ - amount;
+        balances[account] = balances[account] - amount;
+        emit Transfer(account, address(0), amount);
     }
 
     function balanceOf(address tokenOwner) public view override returns (uint256) {
@@ -48,22 +73,22 @@ contract MYERC20 is IERC20 {
         return true;
     }
 
-    function allowance(address owner, address delegate) public view override returns (uint256) {
-        return allowed[owner][delegate];
+    function allowance(address from, address delegate) public view override returns (uint256) {
+        return allowed[from][delegate];
     }
 
     function transferFrom(
-        address owner,
+        address from,
         address buyer,
         uint256 numTokens
     ) public override returns (bool) {
-        require(numTokens <= balances[owner]);
-        require(numTokens <= allowed[owner][msg.sender]);
+        require(numTokens <= balances[from]);
+        require(numTokens <= allowed[from][msg.sender]);
 
-        balances[owner] = balances[owner] - numTokens;
-        allowed[owner][msg.sender] = allowed[owner][msg.sender] - numTokens;
+        balances[from] = balances[from] - numTokens;
+        allowed[from][msg.sender] = allowed[from][msg.sender] - numTokens;
         balances[buyer] = balances[buyer] + numTokens;
-        emit Transfer(owner, buyer, numTokens);
+        emit Transfer(from, buyer, numTokens);
         return true;
     }
 }
