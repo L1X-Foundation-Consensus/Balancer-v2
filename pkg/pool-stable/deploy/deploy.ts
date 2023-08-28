@@ -15,8 +15,8 @@ async function main() {
   console.log('Deploying contracts with the account:', deployer.address);
   const erc20Factory = await ethers.getContractFactory('MYERC20');
   const erc20Params = {
-    _name: 'USDT Token',
-    _symbol: 'USDT',
+    _name: 'wETHUSDC',
+    _symbol: 'wETHUSDC',
     _decimals: 18,
     initialSupply: ethers.utils.parseUnits('1000000000', 0),
   };
@@ -42,8 +42,8 @@ async function main() {
 
   console.log('Contract 201 deployed to:', erc20.address);
   const erc20Params2 = {
-    _name: 'USDC Token',
-    _symbol: 'USDC',
+    _name: 'wETHUSDT',
+    _symbol: 'wETHUSDT',
     _decimals: 18,
     initialSupply: ethers.utils.parseUnits('1000000000', 0),
   };
@@ -290,8 +290,8 @@ async function main() {
     {
       vault: '0x7ba9268c354b2f0156abdec86ca0ac8e8135673f', // change
       protocolFeeProvider: '0xeda67b104377ffa4e7af8d97503e06dddbb24cdf', // change
-      name: 'USDT-USDC',
-      symbol: 'TC',
+      name: 'wETHUSDC-wETHUSDT',
+      symbol: 'wETHUSDC-wETHUSDT',
       tokens: ['0x98c16b40e86648ddfa73ac8d1730792ab735b457', '0xa7afd0642cfcadacaee88cdf2b84711a1b11d025'].sort(), // change
       rateProviders: [
         '0x10e32d5cdd1122cf506575702f12b66f0d9ac80b', // change
