@@ -333,6 +333,13 @@ async function main() {
 
   // console.log('token info', await vault.getPoolTokenInfo(poolId, erc20.address));
   let tokenInfo = await vault.getPoolTokens(poolId);
+  // let tokenInfo = [
+  //   [
+  //     '0x07df10b89fa81334b29e54805d291cbcdd88cb52',
+  //     '0x187055e8b7930e769cb10e2114889a51ddb3295e',
+  //     '0x377cd88638963d45c8541509b70b9113c344d8b0',
+  //   ],
+  // ]; // get pool
 
   const tokenInfo2 = await vault.getPoolTokens(poolId2);
 
@@ -372,6 +379,10 @@ async function main() {
   await erc202.transfer(bob.address, ethers.utils.parseEther('1000000'));
 
   await erc20.connect(bob).approve(vault.address, ethers.utils.parseEther('100000'));
+  console.log(
+    'bob approve bytecode',
+    await erc20.populateTransaction.approve(vault.address, ethers.utils.parseEther('100000'))
+  );
   await erc202.connect(bob).approve(vault.address, ethers.utils.parseEther('100000'));
   console.log('bob balance', bignumberToNumber(await erc20.balanceOf(bob.address)));
   console.log('bob balance', bignumberToNumber(await erc202.balanceOf(bob.address)));
@@ -381,13 +392,13 @@ async function main() {
   console.log('bob allow', bignumberToNumber(allowbob));
   console.log('bob allow1', bignumberToNumber(allowbob1));
 
-  // tokenInfo = [
+  //  tokenInfo = [
   //   [
-  //     '0x12e885fcc6be41f25f3793e6e0b5cdb845f6a87e',
-  //     '0x98c16b40e86648ddfa73ac8d1730792ab735b457',
-  //     '0xa7afd0642cfcadacaee88cdf2b84711a1b11d025',
+  //     '0x07df10b89fa81334b29e54805d291cbcdd88cb52',
+  //     '0x187055e8b7930e769cb10e2114889a51ddb3295e',
+  //     '0x377cd88638963d45c8541509b70b9113c344d8b0',
   //   ],
-  // ]; // get pool id from pool contract, get it by using getPoolToken(pool id) from vault,
+  // ]; // get pool
   let amountsInBob = [];
   let tokenInfoBob = [];
   let max = [];
@@ -414,10 +425,10 @@ async function main() {
       userData: StablePoolEncoder.joinExactTokensInForBPTOut(amountsInBob, 0),
     }
   );
+  await txJoinBob.wait();
   console.log('bob balance', bignumberToNumber(await erc20.balanceOf(bob.address)));
   console.log('bob balance', bignumberToNumber(await erc202.balanceOf(bob.address)));
   console.log('bpt bob balance', bignumberToNumber(await contract.balanceOf(bob.address)));
-  console.log(await txJoin.wait);
   tokenInfo = await vault.getPoolTokens(poolId);
 
   console.log('pool balance', tokenInfo[1]);
@@ -488,7 +499,7 @@ main()
     console.error(error);
     process.exit(1);
   });
-function toBytes32(num: any) {
+export function toBytes32(num: any) {
   let hex = num.toString(16); // Convert number to hexadecimal
   while (hex.length < 64) {
     // Pad with zeros until it's 64 characters (32 bytes)
@@ -497,7 +508,7 @@ function toBytes32(num: any) {
   return '0x' + hex;
 }
 
-function bignumberToNumber(num: any) {
+export function bignumberToNumber(num: any) {
   return num.div(ethers.BigNumber.from(10).pow(18)).toNumber();
 }
 
@@ -509,4 +520,17 @@ export function toChainedReference(key: BigNumberish, isTemporary = true): BigNu
   const paddedPrefix = `0x${prefix}${'0'.repeat(64 - prefix.length)}`;
 
   return BigNumber.from(paddedPrefix).add(key);
+}
+
+export interface Input {
+  owner: string;
+  vault: string;
+  protocol: string;
+  erc20: string;
+  erc201: string;
+  rateProvider: string;
+  rateProvider1: string;
+  authorizer: string;
+  weth: string;
+  approve: { amount: string };
 }

@@ -1,0 +1,14 @@
+{
+    "owner": "0x75104938baa47c54a86004ef998cc76c2e616289",
+    "vault": "0x75104938baa47c54a86004ef998cc76c2e616289",
+    "protocol": "0x75104938baa47c54a86004ef998cc76c2e616289",
+    "erc20": "0x75104938baa47c54a86004ef998cc76c2e616289",
+    "erc201": "0x75104938baa47c54a86004ef998cc76c2e616289",
+    "rateProvider": "0x75104938baa47c54a86004ef998cc76c2e616289",
+    "rateProvider1": "0x75104938baa47c54a86004ef998cc76c2e616289",
+    "authorizer": "0x75104938baa47c54a86004ef998cc76c2e616289",
+    "weth": "0x75104938baa47c54a86004ef998cc76c2e616289",
+    "approve": {
+        "amount": "10000"
+    }
+}

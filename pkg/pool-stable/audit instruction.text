@@ -1,0 +1,11 @@
+
+The majority of contracts responsible for the creation of stable pools can be found within the 'pool-stable' directory. Please get balancer-labs/v2 from balancer v2 before auditing. To facilitate the creation of stable pools for users, we will utilize 'ComposableStablePoolFactory.sol,' and all of the relative contracts are imported at this contract. 
+
+import "@balancer-labs/v2-interfaces/contracts/pool-utils/IPoolVersion.sol";
+import "@balancer-labs/v2-interfaces/contracts/solidity-utils/helpers/IVersion.sol";
+import "@balancer-labs/v2-interfaces/contracts/vault/IVault.sol";
+import "@balancer-labs/v2-pool-utils/contracts/factories/BasePoolFactory.sol";
+import "./ComposableStablePool.sol";
+
+For the vault, it will use weth contracts and authorizer contracts for its constructor. 
+For the ComposableStablePool.sol, it will use erc20 contracts and rate provider contracts for its constructor. 
