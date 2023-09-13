@@ -532,5 +532,30 @@ export interface Input {
   rateProvider1: string;
   authorizer: string;
   weth: string;
-  approve: { amount: string };
+  approveCall: ApproveCall;
+  TokenListByPoolIdCall: TokenListByPoolIDCall;
+  initPoolCall: InitPoolCall;
+  joinPoolCall: JoinPoolCall;
+}
+
+export interface TokenListByPoolIDCall {
+  poolId: string;
+}
+
+export interface ApproveCall {
+  amount: string;
+}
+
+export interface InitPoolCall {
+  tokenInfo: string[];
+  maxAmountsIn: string[];
+  amountsIn: string[];
+  address: string;
+}
+
+export interface JoinPoolCall {
+  amountsIn: string[];
+  maxAmountsIn: string[];
+  tokenInfo: string[];
+  address: string;
 }

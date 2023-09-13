@@ -1,15 +1,18 @@
-import { Input, bignumberToNumber } from './deploy';
-import { filePath } from './deployAuth';
-const { ethers } = require('hardhat');
-const fs = require('fs');
-
+// import { Input, bignumberToNumber } from './deploy';
+import { ethers } from 'hardhat';
+import fs from 'fs';
+export const filePath = './deploy/input.json';
 async function main() {
+  const data = fs.readFileSync(filePath, 'utf8');
+  const jsonData = JSON.parse(data);
+  console.log('JSON Data:', jsonData);
   const signers = await ethers.getSigners();
   const deployer = signers[0];
   const bob = signers[1];
   const charlie = signers[2];
 
   const erc20Factory = await ethers.getContractFactory('MYERC20');
+
   const erc20Params = {
     _name: 'wETHUSDC',
     _symbol: 'wETHUSDC',
@@ -39,31 +42,19 @@ async function main() {
     { gasLimit: 30000000 }
   );
 
-  console.log('Contract 20 deployed to:', erc20.address);
-  console.log('Contract 202 deployed to:', erc202.address);
+  const erc20ApprovalTx = await erc20.populateTransaction.approve(
+    jsonData.vault,
+    ethers.utils.parseEther(jsonData.approveCall.amount)
+  );
 
-  try {
-    const data = fs.readFileSync(filePath, 'utf8');
-    const jsonData: Input = JSON.parse(data);
+  console.log('approve erc20 bytecode', erc20ApprovalTx);
 
-    console.log('Data read from file:', jsonData);
+  const erc202ApprovalTx = await erc202.populateTransaction.approve(
+    jsonData.vault,
+    ethers.utils.parseEther(jsonData.approveCall.amount)
+  );
 
-    const erc20ApprovalTx = await erc20.populateTransaction.approve(
-      jsonData.vault,
-      ethers.utils.parseEther(jsonData.approve.amount)
-    );
-
-    console.log('approve erc20 bytecode', erc20ApprovalTx);
-
-    const erc202ApprovalTx = await erc202.populateTransaction.approve(
-      jsonData.vault,
-      ethers.utils.parseEther(jsonData.approve.amount)
-    );
-
-    console.log('approve erc201 bytecode', erc202ApprovalTx);
-  } catch (err) {
-    console.error('Error reading or writing file:', err);
-  }
+  console.log('approve erc201 bytecode', erc202ApprovalTx);
 }
 
 main()

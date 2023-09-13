@@ -1,5 +1,7 @@
 // import { Input, bignumberToNumber } from './deploy';
 import { ethers } from 'hardhat';
+import { StablePoolEncoder } from '@balancer-labs/balancer-js/src/pool-stable/encoder';
+
 import fs from 'fs';
 import { fp } from '@balancer-labs/v2-helpers/src/numbers';
 import { getPoolInstance } from './tool';
@@ -26,9 +28,25 @@ async function main() {
     version: '1.0.0',
   };
 
-  const contract = (await getPoolInstance()).pool;
-  console.log('ppol deployed to:', contract.address);
-  console.log('pool id bytecode', await contract.populateTransaction.getPoolId());
+  const contract = await getPoolInstance();
+  console.log(
+    'init pool bytecode',
+    await contract.vault.populateTransaction.joinPool(
+      jsonData.TokenListByPoolIdCall.poolId, // pool id
+      jsonData.initPoolCall.address,
+      jsonData.initPoolCall.address,
+      {
+        assets: jsonData.initPoolCall.tokenInfo,
+        maxAmountsIn: [
+          ethers.utils.parseEther(jsonData.initPoolCall.maxAmountsIn[0]),
+          ethers.utils.parseEther(jsonData.initPoolCall.maxAmountsIn[1]),
+          ethers.utils.parseEther(jsonData.initPoolCall.maxAmountsIn[2]),
+        ],
+        fromInternalBalance: false,
+        userData: StablePoolEncoder.joinInit(jsonData.initPoolCall.amountsIn),
+      }
+    )
+  );
 }
 
 main()
