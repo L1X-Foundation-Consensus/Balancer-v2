@@ -523,6 +523,7 @@ export function toChainedReference(key: BigNumberish, isTemporary = true): BigNu
 }
 
 export interface Input {
+  dumpPath: string;
   owner: string;
   vault: string;
   protocol: string;

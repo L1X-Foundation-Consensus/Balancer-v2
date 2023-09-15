@@ -1,6 +1,3 @@
-import { SwapKind, WeightedPoolEncoder } from '@balancer-labs/balancer-js';
-import { StablePoolEncoder } from '@balancer-labs/balancer-js/src/pool-stable/encoder';
-import { MAX_UINT256 } from '@balancer-labs/v2-helpers/src/constants';
 import { BigNumber, BigNumberish, fp } from '@balancer-labs/v2-helpers/src/numbers';
 const { ethers } = require('hardhat');
 const fs = require('fs');

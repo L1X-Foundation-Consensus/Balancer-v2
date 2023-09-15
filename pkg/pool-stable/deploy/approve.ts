@@ -1,7 +1,8 @@
-// import { Input, bignumberToNumber } from './deploy';
 import { ethers } from 'hardhat';
 import fs from 'fs';
 export const filePath = './deploy/input.json';
+const myVariable = process.env.MY_VARIABLE;
+console.log('myVariable', myVariable);
 async function main() {
   const data = fs.readFileSync(filePath, 'utf8');
   const jsonData = JSON.parse(data);
@@ -42,19 +43,19 @@ async function main() {
     { gasLimit: 30000000 }
   );
 
-  const erc20ApprovalTx = await erc20.populateTransaction.approve(
-    jsonData.vault,
-    ethers.utils.parseEther(jsonData.approveCall.amount)
-  );
+    const erc20ApprovalTx = await erc20.populateTransaction.approve(
+      jsonData.vault,
+      ethers.utils.parseEther(jsonData.approveCall.amount)
+    );
 
-  console.log('approve erc20 bytecode', erc20ApprovalTx);
+    console.log('approve erc20 bytecode', erc20ApprovalTx);
 
-  const erc202ApprovalTx = await erc202.populateTransaction.approve(
-    jsonData.vault,
-    ethers.utils.parseEther(jsonData.approveCall.amount)
-  );
+    const erc202ApprovalTx = await erc202.populateTransaction.approve(
+      jsonData.vault,
+      ethers.utils.parseEther(jsonData.approveCall.amount)
+    );
 
-  console.log('approve erc201 bytecode', erc202ApprovalTx);
+    console.log('approve erc201 bytecode', erc202ApprovalTx);
 }
 
 main()

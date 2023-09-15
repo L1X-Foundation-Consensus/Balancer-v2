@@ -1,6 +1,3 @@
-import { SwapKind, WeightedPoolEncoder } from '@balancer-labs/balancer-js';
-import { StablePoolEncoder } from '@balancer-labs/balancer-js/src/pool-stable/encoder';
-import { MAX_UINT256 } from '@balancer-labs/v2-helpers/src/constants';
 import { BigNumber, BigNumberish, fp } from '@balancer-labs/v2-helpers/src/numbers';
 import { Input, toBytes32 } from './deploy';
 import { ethers } from 'hardhat';
@@ -13,14 +10,11 @@ async function main() {
     console.error(`File not found: ${filePath}`);
     return;
   }
-  
-
   try {
     const data = fs.readFileSync(filePath, 'utf8');
     const jsonData: Input = JSON.parse(data);
     console.log(jsonData);
     const encodedParams5 = ContractFactory.interface.encodeDeploy([
-      // for deploying new stable pool directly
       {
         vault: jsonData.vault,
         protocolFeeProvider: jsonData.protocol,
@@ -29,7 +23,7 @@ async function main() {
         tokens: [jsonData.erc20, jsonData.erc201].sort(),
         rateProviders: [
           jsonData.rateProvider,
-          jsonData.rateProvider1, // change
+          jsonData.rateProvider1, 
         ].sort(),
         tokenRateCacheDurations: [0, 0],
         exemptFromYieldProtocolFeeFlags: [false, false],
@@ -43,7 +37,7 @@ async function main() {
     ]);
 
     fs.writeFileSync(
-      './creationCode/creationCodePool.txt',
+      jsonData.dumpPath + '/creationCodePool.txt',
       ContractFactory.bytecode.substring(2) + encodedParams5.slice(2)
     );
   } catch (err) {

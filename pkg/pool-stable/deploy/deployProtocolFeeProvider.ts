@@ -1,11 +1,6 @@
-import { SwapKind, WeightedPoolEncoder } from '@balancer-labs/balancer-js';
-import { StablePoolEncoder } from '@balancer-labs/balancer-js/src/pool-stable/encoder';
-import { MAX_UINT256 } from '@balancer-labs/v2-helpers/src/constants';
-import { BigNumber, BigNumberish, fp } from '@balancer-labs/v2-helpers/src/numbers';
 import { Input, toBytes32 } from './deploy';
 import { ethers } from 'hardhat';
 import fs from 'fs';
-
 async function main() {
   const ProtocolFeePercentagesProviderFactory = await ethers.getContractFactory('ProtocolFeePercentagesProvider');
 
@@ -24,7 +19,7 @@ async function main() {
       200,
     ]);
     fs.writeFileSync(
-      './creationCode/creationProtocolFee.txt',
+      jsonData.dumpPath + '/creationProtocolFee.txt',
       ProtocolFeePercentagesProviderFactory.bytecode.substring(2) + encodedParams4.slice(2)
     );
   } catch (err) {
