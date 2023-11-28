@@ -1,19 +1,19 @@
 {
     "dumpPath": "./creationCode",
     "owner": "0x75104938baa47c54a86004ef998cc76c2e616281",
-    "vault": "0x7ba9268c354b2f0156abdec86ca0ac8e8135673f",
-    "protocol": "0xeda67b104377ffa4e7af8d97503e06dddbb24cdf",
-    "erc20": "0x98c16b40e86648ddfa73ac8d1730792ab735b457",
-    "erc201": "0xa7afd0642cfcadacaee88cdf2b84711a1b11d025",
-    "rateProvider": "0x10e32d5cdd1122cf506575702f12b66f0d9ac80b",
-    "rateProvider1": "0x6c11eee685845d7decb59802ba64f11acb008470",
-    "authorizer": "0x98f5708a5e6ef3e03cbf7f3913baf7596cb06f78",
-    "weth": "0x75efbcee8c37849b63287a1fcd367368a5f0ab80",
+    "vault": "0x12b43b3a6add4188bd484a24e5ba0edfe442ba36",
+    "protocol": "0xb95a53d594dd219604131188bafcf05512fbc8cd",
+    "erc20": "0x1ce8ee2eb67f48c2e136039a2b8bdf80ca032380",
+    "erc201": "0x62d20b5ffb991d673b80ced35faf89903a43183e",
+    "rateProvider": "0xf48738e24e86622465f7a53d3cc863febccfdc69",
+    "rateProvider1": "0x3bfdb00ad0c243316f72f82ed718ea7afd76deab",
+    "authorizer": "0x06210c48ed1a75e31fc9294dfe7cf04597cdd311",
+    "weth": "0x81845e08ce6082797a597ce5a40309042dd22aef",
     "approveCall": {
         "amount": "10000"
     },
     "TokenListByPoolIdCall": {
-        "poolId": "0x12e885fcc6be41f25f3793e6e0b5cdb845f6a87e000000000000000000000000"
+        "poolId": "0x72dd21b4a79651e1f35dbd3615e16752a090b533000000000000000000000000"
     },
     "initPoolCall": {
         "tokenInfo": [

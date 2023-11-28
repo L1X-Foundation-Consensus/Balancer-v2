@@ -1,6 +1,6 @@
 import { SwapKind, WeightedPoolEncoder } from '@balancer-labs/balancer-js';
 import { StablePoolEncoder } from '@balancer-labs/balancer-js/src/pool-stable/encoder';
-import { MAX_UINT256 } from '@balancer-labs/v2-helpers/src/constants';
+import { MAX_UINT256, ZERO_ADDRESS } from '@balancer-labs/v2-helpers/src/constants';
 import { BigNumber, BigNumberish, fp } from '@balancer-labs/v2-helpers/src/numbers';
 const { ethers } = require('hardhat');
 const fs = require('fs');
@@ -94,7 +94,7 @@ async function main() {
   const AuthorizerFactory = await ethers.getContractFactory('Authorizer');
   // 100 to soldity bytes32
 
-  const authorizer = await AuthorizerFactory.deploy(toBytes32(10), deployer.address, deployer.address, {
+  const authorizer = await AuthorizerFactory.deploy(deployer.address, {
     gasLimit: 30000000,
   });
   console.log('Contract authorizer deployed to:', authorizer.address);
@@ -103,13 +103,7 @@ async function main() {
   fs.writeFileSync(
     './creationCode/creationAuthorizer.txt',
     AuthorizerFactory.bytecode.substring(2) +
-      AuthorizerFactory.interface
-        .encodeDeploy([
-          toBytes32(10),
-          '0x75104938baa47c54a86004ef998cc76c2e616289',
-          '0x75104938baa47c54a86004ef998cc76c2e616289',
-        ])
-        .slice(2)
+      AuthorizerFactory.interface.encodeDeploy(['0x75104938baa47c54a86004ef998cc76c2e616289']).slice(2)
   );
   const runtimeBytecodeAuthorizer = await ethers.provider.getCode(authorizer.address);
   fs.writeFileSync('./runtimeCode/runtimeBytecodeAuthorizer.txt', runtimeBytecodeAuthorizer.substring(2));
@@ -141,6 +135,19 @@ async function main() {
   fs.writeFileSync('./creationCode/creationVault.txt', VaultFactory.bytecode.substring(2) + encodedParams3.slice(2));
   const runtimeBytecodevault = await ethers.provider.getCode(vault.address);
   fs.writeFileSync('./runtimeCode/runtimeBytecodevault.txt', runtimeBytecodevault.substring(2));
+
+  const balancerQueriesFactory = await ethers.getContractFactory('BalancerQueries');
+  const balancerQueries = await balancerQueriesFactory.deploy(vault.address);
+  console.log('Contract balancerQueries deployed to:', balancerQueries.address);
+
+  const encodedParams9 = balancerQueriesFactory.interface.encodeDeploy([vault.address]);
+  fs.writeFileSync(
+    './creationCode/creationBalancerQueries.txt',
+    balancerQueriesFactory.bytecode.substring(2) + encodedParams9.slice(2)
+  );
+  const runtimeBytecodebalancerQueries = await ethers.provider.getCode(balancerQueries.address);
+  fs.writeFileSync('./runtimeCode/runtimeBytecodeBalancerQueries.txt', runtimeBytecodebalancerQueries.substring(2));
+
   // deploy ProtocolFeePercentagesProvider
   const ProtocolFeePercentagesProviderFactory = await ethers.getContractFactory('ProtocolFeePercentagesProvider');
   const protocolFeePercentagesProvider = await ProtocolFeePercentagesProviderFactory.deploy(vault.address, 100, 200, {
@@ -254,7 +261,7 @@ async function main() {
     'MSPp',
     [erc20.address, erc202.address].sort(),
     BigInt('1'), // amplificationParameter,
-    [rateProvider.address, rateProvider2.address].sort(),
+    ['0x0000000000000000000000000000000000000000', '0x0000000000000000000000000000000000000000'].sort(),
     [0, 0], //uint256[] memory tokenRateCacheDurations,
     [false, false], // bool[] memory exemptFromYieldProtocolFeeFlags,
     fp(0.1), //uint256 swapFeePercentage,
@@ -274,7 +281,7 @@ async function main() {
     name: 'My Stable Pool',
     symbol: 'MSP',
     tokens: [erc20.address, erc202.address].sort(),
-    rateProviders: [rateProvider.address, rateProvider2.address],
+    rateProviders: ['0x0000000000000000000000000000000000000000', '0x0000000000000000000000000000000000000000'],
     tokenRateCacheDurations: [0, 0],
     exemptFromYieldProtocolFeeFlags: [false, false],
     amplificationParameter: BigInt('1'),
@@ -414,6 +421,18 @@ async function main() {
     }
   }
   console.log(tokenInfo[0], tokenInfoBob, amountsInBob);
+
+  const sender = ZERO_ADDRESS;
+  const recipient = ZERO_ADDRESS;
+
+  const queryJoin = await balancerQueries.queryJoin(poolId, sender, recipient, {
+    assets: tokenInfoBob,
+    maxAmountsIn: max,
+    fromInternalBalance: false,
+    userData: StablePoolEncoder.joinExactTokensInForBPTOut(amountsInBob, 0),
+  });
+
+  console.log('estimated join amount out: ', queryJoin);
   const txJoinBob = await vault.connect(bob).joinPool(
     poolId, // pool id
     bob.address,
@@ -436,6 +455,35 @@ async function main() {
 
   console.log('erc20 balance', bignumberToNumber(await erc20.balanceOf(deployer.address)));
   console.log('erc202 balance', bignumberToNumber(await erc202.balanceOf(deployer.address)));
+
+  let funds: FundManagement;
+  funds = {
+    sender: vault.address,
+    recipient: ZERO_ADDRESS,
+    fromInternalBalance: false,
+    toInternalBalance: false,
+  };
+  // const swaps: BatchSwapStep[] = toSwaps(swapsData);
+  // const deltas = await vault.queryBatchSwap(SwapKind.GivenIn, swaps, tokens.addresses, funds);
+  // const sender = ZERO_ADDRESS;
+  // const recipient = ZERO_ADDRESS;
+
+  const amount = fp(10);
+  const indexIn = 0;
+  const indexOut = 1;
+
+  const querySwap = await balancerQueries.querySwap(
+    {
+      poolId: poolId,
+      kind: SwapKind.GivenIn,
+      assetIn: erc20.address,
+      assetOut: erc202.address,
+      amount,
+      userData: '0x',
+    },
+    funds
+  );
+  console.log('estimated swap amount out: ', querySwap);
 
   const swap = await vault.swap(
     {
@@ -478,6 +526,14 @@ async function main() {
   //   userData: StablePoolEncoder.joinExactTokensInForBPTOut([ethers.utils.parseEther('10000'), ethers.utils.parseEther('10000')], ethers.utils.parseEther('100')),
   // });
   // console.log(await txJoin.wait);
+
+  const queryExit = await balancerQueries.queryExit(poolId, sender, recipient, {
+    assets: tokenInfo[0],
+    minAmountsOut: [ethers.utils.parseEther('0'), ethers.utils.parseEther('0'), ethers.utils.parseEther('0')],
+    userData: StablePoolEncoder.exitExactBptInForTokensOut(ethers.utils.parseEther('100000000')),
+    toInternalBalance: false,
+  });
+  console.log('estimated exit amount out: ', queryExit);
 
   const txExit = await vault.exitPool(poolId, deployer.address, deployer.address, {
     assets: tokenInfo[0],

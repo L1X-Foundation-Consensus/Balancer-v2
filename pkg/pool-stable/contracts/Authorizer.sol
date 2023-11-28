@@ -15,43 +15,67 @@
 pragma solidity ^0.7.0;
 
 import "@balancer-labs/v2-interfaces/contracts/vault/IAuthorizer.sol";
+import "./lib/openzeppelin/AccessControl.sol";
+import "./lib/helpers/InputHelpers.sol";
 
 /**
- * @dev Temporary Authorizer upgrade that fixes the issue in the AuthorizerAdaptor and allows usage of
- * the AuthorizerAdaptorEntrypoint. The previous Authorizer is the one that actually keeps track of permissions.
+ * @dev Basic Authorizer implementation, based on OpenZeppelin's Access Control.
  *
- * This is expected to be replaced by the TimelockAuthorizer, which also includes this fix.
+ * Users are allowed to perform actions if they have the role with the same identifier. In this sense, roles are not
+ * being truly used as such, since they each map to a single action identifier.
+ *
+ * This temporary implementation is expected to be replaced soon after launch by a more sophisticated one, able to
+ * manage permissions across multiple contracts and to natively handle timelocks.
  */
-contract Authorizer is IAuthorizer {
-    bytes32 public actioinId;
-    address public account;
-    address public where;
-
-    constructor(
-        bytes32 _actionId,
-        address _account,
-        address _where
-    ) {
-        actioinId = _actionId;
-        account = _account;
-        where = _where;
+contract Authorizer is AccessControl, IAuthorizer {
+    constructor(address admin) {
+        _setupRole(DEFAULT_ADMIN_ROLE, admin);
     }
 
     function canPerform(
-        bytes32 _actionId,
-        address _account,
-        address _where
-    ) external view override returns (bool) {
-        if (_actionId != actioinId) {
-            return false;
-        }
-        if (_account != account) {
-            return false;
-        }
-        if (_where != where) {
-            return false;
-        }
+        bytes32 actionId,
+        address account,
+        address
+    ) public view override returns (bool) {
+        // This Authorizer ignores the 'where' field completely.
+        return AccessControl.hasRole(actionId, account);
+    }
 
-        return true;
+    /**
+     * @dev Grants multiple roles to a single account.
+     */
+    function grantRoles(bytes32[] memory roles, address account) external {
+        for (uint256 i = 0; i < roles.length; i++) {
+            grantRole(roles[i], account);
+        }
+    }
+
+    /**
+     * @dev Grants roles to a list of accounts.
+     */
+    function grantRolesToMany(bytes32[] memory roles, address[] memory accounts) external {
+        InputHelpers.ensureInputLengthMatch(roles.length, accounts.length);
+        for (uint256 i = 0; i < roles.length; i++) {
+            grantRole(roles[i], accounts[i]);
+        }
+    }
+
+    /**
+     * @dev Revokes multiple roles from a single account.
+     */
+    function revokeRoles(bytes32[] memory roles, address account) external {
+        for (uint256 i = 0; i < roles.length; i++) {
+            revokeRole(roles[i], account);
+        }
+    }
+
+    /**
+     * @dev Revokes roles from a list of accounts.
+     */
+    function revokeRolesFromMany(bytes32[] memory roles, address[] memory accounts) external {
+        InputHelpers.ensureInputLengthMatch(roles.length, accounts.length);
+        for (uint256 i = 0; i < roles.length; i++) {
+            revokeRole(roles[i], accounts[i]);
+        }
     }
 }
