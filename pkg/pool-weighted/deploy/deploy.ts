@@ -1,6 +1,6 @@
-import { SwapKind } from '@balancer-labs/balancer-js';
+import { BatchSwapStep, FundManagement, SwapKind } from '@balancer-labs/balancer-js';
 import { WeightedPoolEncoder } from '@balancer-labs/balancer-js/src/pool-weighted/encoder';
-import { ANY_ADDRESS, MAX_UINT256 } from '@balancer-labs/v2-helpers/src/constants';
+import { ANY_ADDRESS, MAX_UINT256, ZERO_ADDRESS } from '@balancer-labs/v2-helpers/src/constants';
 import { actionId } from '@balancer-labs/v2-helpers/src/models/misc/actions';
 import { BigNumber, BigNumberish, fp } from '@balancer-labs/v2-helpers/src/numbers';
 const { ethers } = require('hardhat');
@@ -133,6 +133,18 @@ async function main() {
   fs.writeFileSync('./creationCode/creationVault.txt', VaultFactory.bytecode.substring(2) + encodedParams3.slice(2));
   const runtimeBytecodevault = await ethers.provider.getCode(vault.address);
   fs.writeFileSync('./runtimeCode/runtimeBytecodevault.txt', runtimeBytecodevault.substring(2));
+
+  const balancerQueriesFactory = await ethers.getContractFactory('BalancerQueries');
+  const balancerQueries = await balancerQueriesFactory.deploy(vault.address);
+  console.log('Contract balancerQueries deployed to:', balancerQueries.address);
+
+  const encodedParams5 = balancerQueriesFactory.interface.encodeDeploy([vault.address]);
+  fs.writeFileSync(
+    './creationCode/creationBalancerQueries.txt',
+    balancerQueriesFactory.bytecode.substring(2) + encodedParams5.slice(2)
+  );
+  const runtimeBytecodebalancerQueries = await ethers.provider.getCode(balancerQueries.address);
+  fs.writeFileSync('./runtimeCode/runtimeBytecodeBalancerQueries.txt', runtimeBytecodebalancerQueries.substring(2));
 
   const AuthorizerAdaptorFactory = await ethers.getContractFactory('AuthorizerAdaptor');
   const authorizerAdaptor = await AuthorizerAdaptorFactory.deploy(vault.address, {
@@ -298,6 +310,19 @@ async function main() {
     }
   }
   console.log('bob bpt before join: ', await newPoolInstance.balanceOf(bob.address));
+
+  const sender = ZERO_ADDRESS;
+  const recipient = ZERO_ADDRESS;
+
+  const queryJoin = await balancerQueries.queryJoin(poolId, sender, recipient, {
+    assets: tokenInfoBob,
+    maxAmountsIn: max,
+    fromInternalBalance: false,
+    userData: WeightedPoolEncoder.joinExactTokensInForBPTOut(amountsInBob, 0),
+  });
+
+  console.log('estimated join amount out: ', queryJoin);
+
   const txJoinBob = await vault.connect(bob).joinPool(
     poolId,
     bob.address,
@@ -316,6 +341,49 @@ async function main() {
   console.log('bob bpt after join: ', await newPoolInstance.balanceOf(bob.address));
   tokenInfo = await vault.getPoolTokens(poolId);
   console.log('pool balance after join: ', tokenInfo[1]);
+
+  // function queryBatchSwap(
+  //   SwapKind kind,
+  //   BatchSwapStep[] memory swaps,
+  //   IAsset[] memory assets,
+  //   FundManagement memory funds
+  let funds: FundManagement;
+  funds = {
+    sender: vault.address,
+    recipient: ZERO_ADDRESS,
+    fromInternalBalance: false,
+    toInternalBalance: false,
+  };
+  // const swaps: BatchSwapStep[] = toSwaps(swapsData);
+  // const deltas = await vault.queryBatchSwap(SwapKind.GivenIn, swaps, tokens.addresses, funds);
+  // const sender = ZERO_ADDRESS;
+  // const recipient = ZERO_ADDRESS;
+
+  const amount = fp(1000);
+  const indexIn = 0;
+  const indexOut = 1;
+
+  // const result = await vault.queryBatchSwap(
+  //   SwapKind.GivenIn,
+  //   [{ poolId: poolId, assetInIndex: indexIn, assetOutIndex: indexOut, amount, userData: '0x' }],
+  //   tokenInfo[0],
+  //   funds
+  // );
+
+  // console.log('estimated amount out: ', result);
+
+  const result1 = await balancerQueries.querySwap(
+    {
+      poolId: poolId,
+      kind: SwapKind.GivenIn,
+      assetIn: erc20.address,
+      assetOut: erc202.address,
+      amount,
+      userData: '0x',
+    },
+    funds
+  );
+  console.log('estimated amount out 1: ', result1);
 
   const swap = await vault.connect(bob).swap(
     {
@@ -339,6 +407,7 @@ async function main() {
   await swap.wait();
 
   tokenInfo = await vault.getPoolTokens(poolId);
+
   console.log('pool balance after swap', tokenInfo[1]);
   console.log('bob bpt after swap: ', await newPoolInstance.balanceOf(bob.address));
   console.log(
@@ -355,6 +424,14 @@ async function main() {
   console.log(await protocolFeesCollector.getAuthorizer());
 
   tokenInfo = await vault.getPoolTokens(poolId);
+
+  const queryExit = await balancerQueries.queryExit(poolId, sender, recipient, {
+    assets: tokenInfo[0],
+    minAmountsOut: [ethers.utils.parseEther('900'), ethers.utils.parseEther('900'), ethers.utils.parseEther('900')],
+    toInternalBalance: false,
+    userData: WeightedPoolEncoder.exitExactBPTInForTokensOut(ethers.utils.parseEther('2999')),
+  });
+  console.log('estimated exit amount out: ', queryExit);
 
   const txExit = await vault.connect(bob).exitPool(poolId, bob.address, bob.address, {
     assets: tokenInfo[0],
@@ -378,7 +455,7 @@ async function main() {
     ])
   );
   console.log('originalInvariant: ', await newPoolInstance.getInvariant());
-  console.log( await newPoolInstance.balanceOf(protocolFeesCollector.address));
+  console.log(await newPoolInstance.balanceOf(protocolFeesCollector.address));
 }
 
 main()
@@ -448,3 +525,23 @@ export interface JoinPoolCall {
   tokenInfo: string[];
   address: string;
 }
+
+function toSwaps(swapsData: SwapData[]): BatchSwapStep[] {
+  const poolIds: string[] = [];
+  return swapsData.map((swapData) => {
+    return {
+      poolId: poolIds[swapData.poolIdIndex],
+      assetInIndex: swapData.assetInIndex,
+      assetOutIndex: swapData.assetOutIndex,
+      amount: swapData.amount,
+      userData: '0x',
+    };
+  });
+}
+
+type SwapData = {
+  poolIdIndex: number;
+  assetInIndex: number;
+  assetOutIndex: number;
+  amount: number;
+};
