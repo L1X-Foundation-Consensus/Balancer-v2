@@ -14,8 +14,7 @@ async function main() {
     const jsonData: Input = JSON.parse(data);
     fs.writeFileSync(
       jsonData.dumpPath + '/creationAuthorizer.txt',
-      AuthorizerFactory.bytecode.substring(2) +
-        AuthorizerFactory.interface.encodeDeploy([toBytes32(10), jsonData.owner, jsonData.owner]).slice(2)
+      AuthorizerFactory.bytecode.substring(2) + AuthorizerFactory.interface.encodeDeploy([jsonData.owner]).slice(2)
     );
   } catch (err) {
     console.error('Error reading or writing file:', err);
