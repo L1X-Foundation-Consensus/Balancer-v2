@@ -26,9 +26,11 @@ async function main() {
 
   console.log('Signature:', signature);
 
-  // await did.createDID(didDocument.id, didDocument, signature);
+  await did.createDID(didDocument.id, didDocument);
 
   console.log('create bytecode', await did.populateTransaction.createDID(didDocument.id, didDocument));
+
+  console.log('update bytecode', await did.populateTransaction.updateDID(didDocument.id, didDocument));
 
   console.log(await did.fetchDID(didDocument.id));
 
@@ -36,9 +38,9 @@ async function main() {
 
   didDocument.context.push('https://www.w3.org/2018/credentials/v1');
 
-  await did.updateDID(didDocument.id, didDocument, signature);
+  await did.updateDID(didDocument.id, didDocument);
   console.log(await did.fetchDID(didDocument.id));
-  await did.revokeDID(didDocument.id, signature);
+  await did.revokeDID(didDocument.id);
   console.log(await did.fetchDID(didDocument.id));
 }
 
