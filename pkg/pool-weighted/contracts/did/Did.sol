@@ -3,20 +3,14 @@ pragma solidity ^0.7.0;
 pragma experimental ABIEncoderV2;
 
 contract Did {
-    struct DIDDocument {
-        string[] context;
-        string id;
-        string controller;
-    }
+    mapping(string => string) public didDocuments;
 
-    mapping(string => DIDDocument) public didDocuments;
-
-    event DIDCreated(string did, DIDDocument didDocument);
-    event DIDUpdated(string did, DIDDocument didDocument);
+    event DIDCreated(string did, string didDocument);
+    event DIDUpdated(string did, string didDocument);
     event DIDRevoked(string did);
 
-    function createDID(string memory did, DIDDocument memory didDocument) external {
-        require(bytes(didDocuments[did].id).length == 0, "DID already exists");
+    function createDID(string memory did, string memory didDocument) external {
+        require(bytes(didDocuments[did]).length == 0, "DID already exists");
 
         // bytes32 _msgHash = getMessageHash(did, didDocument);
         // bytes32 _ethSignedMessageHash = getEthSignedMessageHash(_msgHash);
@@ -27,8 +21,8 @@ contract Did {
         emit DIDCreated(did, didDocument);
     }
 
-    function updateDID(string memory did, DIDDocument memory didDocument) external {
-        require(bytes(didDocuments[did].id).length != 0, "DID does not exist");
+    function updateDID(string memory did, string memory didDocument) external {
+        require(bytes(didDocuments[did]).length != 0, "DID does not exist");
         // bytes32 _msgHash = getMessageHash(did, didDocument);
         // bytes32 _ethSignedMessageHash = getEthSignedMessageHash(_msgHash);
         // require(_verifySignature(_ethSignedMessageHash, signature, msg.sender), "Invalid signature");
@@ -45,7 +39,7 @@ contract Did {
         emit DIDRevoked(did);
     }
 
-    function fetchDID(string memory did) external view returns (DIDDocument memory) {
+    function fetchDID(string memory did) external view returns (string memory) {
         return didDocuments[did];
     }
 
@@ -53,8 +47,8 @@ contract Did {
         return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", _messageHash));
     }
 
-    function getMessageHash(string memory did, DIDDocument memory didDocument) public pure returns (bytes32) {
-        return keccak256(abi.encodePacked(did, didDocument.controller));
+    function getMessageHash(string memory didDocument) public pure returns (bytes32) {
+        return keccak256(abi.encodePacked(didDocument));
     }
 
     function _verifySignature(bytes32 _msgHash, bytes memory _signature, address _sender) internal pure returns (bool) {

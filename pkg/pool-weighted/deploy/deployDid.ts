@@ -9,11 +9,12 @@ async function main() {
   const didFactory = await ethers.getContractFactory('Did');
   const privateKey = '6d657bbe6f7604fb53bc22e0b5285d3e2ad17f64441b2dc19b648933850f9b46';
   const wallet = new ethers.Wallet(privateKey);
-  const didDocument = {
+  let didDocument = {
     context: ['https://www.w3.org/ns/did/v1'],
     id: 'did:ethr:0x123456789abcdefghi',
     controller: '0x123456789abcdefghi',
   };
+
   const did = await didFactory.deploy();
 
   fs.writeFileSync('./creationCode/did.txt', didFactory.bytecode.substring(2));
@@ -26,11 +27,11 @@ async function main() {
 
   console.log('Signature:', signature);
 
-  await did.createDID(didDocument.id, didDocument);
+  await did.createDID(didDocument.id, JSON.stringify(didDocument));
 
-  console.log('create bytecode', await did.populateTransaction.createDID(didDocument.id, didDocument));
+  console.log('create bytecode', await did.populateTransaction.createDID(didDocument.id,  JSON.stringify(didDocument)));
 
-  console.log('update bytecode', await did.populateTransaction.updateDID(didDocument.id, didDocument));
+  console.log('update bytecode', await did.populateTransaction.updateDID(didDocument.id,  JSON.stringify(didDocument)));
 
   console.log(await did.fetchDID(didDocument.id));
 
@@ -38,7 +39,7 @@ async function main() {
 
   didDocument.context.push('https://www.w3.org/2018/credentials/v1');
 
-  await did.updateDID(didDocument.id, didDocument);
+  await did.updateDID(didDocument.id,  JSON.stringify(didDocument));
   console.log(await did.fetchDID(didDocument.id));
   await did.revokeDID(didDocument.id);
   console.log(await did.fetchDID(didDocument.id));
