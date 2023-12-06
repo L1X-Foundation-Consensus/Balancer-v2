@@ -1,7 +1,7 @@
 {
     "dumpPath": "./creationCode",
     "owner": "0x75104938baa47c54a86004ef998cc76c2e616281",
-    "vault": "0x12b43b3a6add4188bd484a24e5ba0edfe442ba36",
+    "vault": "0xE09fe77782dfb079C11e1dDABe3F27086CebBD70",
     "protocol": "0xb95a53d594dd219604131188bafcf05512fbc8cd",
     "erc20": "0x1ce8ee2eb67f48c2e136039a2b8bdf80ca032380",
     "erc201": "0x62d20b5ffb991d673b80ced35faf89903a43183e",
@@ -10,34 +10,37 @@
     "authorizer": "0x06210c48ed1a75e31fc9294dfe7cf04597cdd311",
     "weth": "0x81845e08ce6082797a597ce5a40309042dd22aef",
     "approveCall": {
-        "amount": "10000"
+        "amount": "1000000000"
     },
     "TokenListByPoolIdCall": {
-        "poolId": "0x72dd21b4a79651e1f35dbd3615e16752a090b533000000000000000000000000"
+        "poolId": "0x8890642a6bc5d56acb81b968618b9a3c55e3769d000000000000000000000000"
     },
     "initPoolCall": {
         "tokenInfo": [
-            "0x75104938baa47c54a86004ef998cc76c2e616289",
-            "0x75104938baa47c54a86004ef998cc76c2e616289",
-            "0x75104938baa47c54a86004ef998cc76c2e616289"
+            "0x3a04015F1279b5eA19B5Cc12DAF24c61818B3Aaa",
+            "0x8890642A6Bc5d56acb81b968618B9a3C55e3769d",
+            "0xA40E9B1F5420F228526226798B145E69A419da70",
+            "0xCF725479563C938F8E09AF682C01c90D7Adc8972"
         ],
         "maxAmountsIn": [
+            "10000000000000000",
             "10000000000000000",
             "10000000000000000",
             "10000000000000000"
         ],
         "amountsIn": [
-            "10000",
-            "10000",
-            "10000"
+            "500000000",
+            "500000000",
+            "500000000",
+            "500000000"
         ],
-        "address": "0x75104938baa47c54a86004ef998cc76c2e616289"
+        "address": "0x7B7AB20f75B691E90c546e89E41aA23b0A821444"
     },
     "joinPoolCall": {
         "tokenInfo": [
-            "0x75104938baa47c54a86004ef998cc76c2e616289",
-            "0x75104938baa47c54a86004ef998cc76c2e616289",
-            "0x75104938baa47c54a86004ef998cc76c2e616289"
+            "0x7B7AB20f75B691E90c546e89E41aA23b0A821444",
+            "0x7B7AB20f75B691E90c546e89E41aA23b0A821444",
+            "0x7B7AB20f75B691E90c546e89E41aA23b0A821444"
         ],
         "amountsIn": [
             "10000",
@@ -48,6 +51,6 @@
             "10000",
             "10000"
         ],
-        "address": "0x75104938baa47c54a86004ef998cc76c2e616289"
+        "address": "0x7B7AB20f75B691E90c546e89E41aA23b0A821444"
     }
 }

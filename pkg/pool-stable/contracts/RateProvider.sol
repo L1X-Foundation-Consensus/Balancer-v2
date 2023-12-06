@@ -29,7 +29,7 @@ contract RateProvider is IRateProvider {
         return _rate;
     }
 
-    function mockRate(uint256 newRate) external {
+    function updateRate(uint256 newRate) external {
         _rate = newRate;
     }
 }

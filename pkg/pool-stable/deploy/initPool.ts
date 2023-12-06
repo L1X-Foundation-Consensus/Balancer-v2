@@ -11,23 +11,6 @@ async function main() {
   const jsonData = JSON.parse(data);
   console.log('JSON Data:', jsonData);
 
-  const poolParams = {
-    vault: jsonData.vault,
-    protocolFeeProvider: jsonData.protocol,
-    name: 'My Stable Pool',
-    symbol: 'MSP',
-    tokens: [jsonData.erc20, jsonData.erc201].sort(),
-    rateProviders: [jsonData.rateProvider, jsonData.rateProvider1].sort(),
-    tokenRateCacheDurations: [0, 0],
-    exemptFromYieldProtocolFeeFlags: [false, false],
-    amplificationParameter: BigInt('1'),
-    swapFeePercentage: fp(0.1),
-    pauseWindowDuration: 0,
-    bufferPeriodDuration: 0,
-    owner: jsonData.owner,
-    version: '1.0.0',
-  };
-
   const contract = await getPoolInstance();
   console.log(
     'init pool bytecode',
@@ -41,6 +24,7 @@ async function main() {
           ethers.utils.parseEther(jsonData.initPoolCall.maxAmountsIn[0]),
           ethers.utils.parseEther(jsonData.initPoolCall.maxAmountsIn[1]),
           ethers.utils.parseEther(jsonData.initPoolCall.maxAmountsIn[2]),
+          ethers.utils.parseEther(jsonData.initPoolCall.maxAmountsIn[3]),
         ],
         fromInternalBalance: false,
         userData: StablePoolEncoder.joinInit(jsonData.initPoolCall.amountsIn),

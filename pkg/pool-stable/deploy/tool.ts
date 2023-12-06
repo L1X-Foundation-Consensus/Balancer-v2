@@ -13,42 +13,31 @@ export async function getPoolInstance() {
   const bob = signers[1];
   const charlie = signers[2];
   console.log('Deploying contracts with the account:', deployer.address);
-  const erc20Factory = await ethers.getContractFactory('MYERC20');
+  const erc20Factory = await ethers.getContractFactory('OldWrappedToken');
   const erc20Params = {
-    _name: 'wETHUSDC',
-    _symbol: 'wETHUSDC',
+    _name: 'USDC',
+    _symbol: 'USDC',
     _decimals: 18,
-    initialSupply: ethers.utils.parseUnits('1000000000', 0),
   };
-  console.log(bignumberToNumber(ethers.utils.parseEther('1000000000')));
-  const erc20 = await erc20Factory.deploy(
-    erc20Params.initialSupply,
-    erc20Params._name,
-    erc20Params._symbol,
-    erc20Params._decimals,
-    { gasLimit: 30000000 }
-  );
+  const erc20 = await erc20Factory.deploy(erc20Params._name, erc20Params._symbol, erc20Params._decimals, {
+    gasLimit: 30000000,
+  });
 
   const erc20Params2 = {
-    _name: 'wETHUSDT',
-    _symbol: 'wETHUSDT',
+    _name: 'USDT',
+    _symbol: 'USDT',
     _decimals: 18,
-    initialSupply: ethers.utils.parseUnits('1000000000', 0),
   };
-  const erc202 = await erc20Factory.deploy(
-    erc20Params2.initialSupply,
-    erc20Params2._name,
-    erc20Params2._symbol,
-    erc20Params2._decimals,
-    { gasLimit: 30000000 }
-  );
+  const erc202 = await erc20Factory.deploy(erc20Params2._name, erc20Params2._symbol, erc20Params2._decimals, {
+    gasLimit: 30000000,
+  });
 
   const wethFactory = await ethers.getContractFactory('WETH');
   const weth = await wethFactory.deploy({ gasLimit: 30000000 });
 
   const AuthorizerFactory = await ethers.getContractFactory('Authorizer');
 
-  const authorizer = await AuthorizerFactory.deploy(toBytes32(10), deployer.address, deployer.address, {
+  const authorizer = await AuthorizerFactory.deploy(deployer.address, {
     gasLimit: 30000000,
   });
 

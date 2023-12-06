@@ -15,13 +15,13 @@ async function main() {
   console.log('Deploying contracts with the account:', deployer.address);
   const erc20Factory = await ethers.getContractFactory('OldWrappedToken');
   const erc20Params = {
-    _name: 'ETH',
-    _symbol: 'ETH',
+    _name: 'USDC',
+    _symbol: 'USDC',
     _decimals: 18,
   };
   console.log(bignumberToNumber(ethers.utils.parseEther('1000000000')));
   const erc20 = await erc20Factory.deploy(erc20Params._name, erc20Params._symbol, erc20Params._decimals, {
-    gasLimit:10000,
+    gasLimit: 1000,
   });
   // write creation code to file
   const encodedParams = erc20Factory.interface.encodeDeploy([
@@ -34,14 +34,14 @@ async function main() {
   const runtimeBytecode20 = await ethers.provider.getCode(erc20.address);
   fs.writeFileSync('./runtimeCode/runtimeBytecode20.txt', runtimeBytecode20.substring(2));
 
-  console.log('Contract 201 deployed to:', erc20.address);
+  console.log('Contract USDC deployed to:', erc20.address);
   const erc20Params2 = {
-    _name: 'opETH',
-    _symbol: 'opETH',
+    _name: 'USDT',
+    _symbol: 'USDT',
     _decimals: 18,
   };
   const erc202 = await erc20Factory.deploy(erc20Params2._name, erc20Params2._symbol, erc20Params2._decimals, {
-    gasLimit:10000,
+    gasLimit: 1000,
   });
   // write creation code to file
   const encodedParams2 = erc20Factory.interface.encodeDeploy([
@@ -54,19 +54,19 @@ async function main() {
   const runtimeBytecode202 = await ethers.provider.getCode(erc20.address);
   fs.writeFileSync('./runtimeCode/runtimeBytecode202.txt', runtimeBytecode202.substring(2));
 
-  console.log('Contract 202 deployed to:', erc202.address);
+  console.log('Contract USDT deployed to:', erc202.address);
   const erc20Params3 = {
-    _name: 'arbETH',
-    _symbol: 'arbETH',
+    _name: 'BUSD',
+    _symbol: 'BUSD',
     _decimals: 18,
   };
   const erc203 = await erc20Factory.deploy(erc20Params3._name, erc20Params3._symbol, erc20Params3._decimals, {
-    gasLimit:10000,
+    gasLimit: 1000,
   });
-  console.log('Contract 203 deployed to:', erc203.address);
+  console.log('Contract BUSD deployed to:', erc203.address);
 
   const wethFactory = await ethers.getContractFactory('WETH');
-  const weth = await wethFactory.deploy({ gasLimit:10000 });
+  const weth = await wethFactory.deploy({ gasLimit: 1000 });
   console.log('Contract weth deployed to:', weth.address);
   // write weth creation code to file
 
@@ -78,7 +78,7 @@ async function main() {
   // 100 to soldity bytes32
 
   const authorizer = await AuthorizerFactory.deploy(deployer.address, {
-    gasLimit:10000,
+    gasLimit: 1000,
   });
   console.log('Contract authorizer deployed to:', authorizer.address);
   // write weth creation code to file
@@ -104,7 +104,7 @@ async function main() {
     vaultParams.weth,
     vaultParams.pauseWindowDuration,
     vaultParams.bufferPeriodDuration,
-    { gasLimit:10000 }
+    { gasLimit: 1000 }
   );
 
   console.log('Contract vault deployed to:', vault.address);
@@ -134,7 +134,7 @@ async function main() {
   // deploy ProtocolFeePercentagesProvider
   const ProtocolFeePercentagesProviderFactory = await ethers.getContractFactory('ProtocolFeePercentagesProvider');
   const protocolFeePercentagesProvider = await ProtocolFeePercentagesProviderFactory.deploy(vault.address, 100, 200, {
-    gasLimit:10000,
+    gasLimit: 1000,
   });
   console.log('Contract protovol fee deployed to:', protocolFeePercentagesProvider.address);
   const encodedParams4 = ProtocolFeePercentagesProviderFactory.interface.encodeDeploy([
@@ -151,19 +151,22 @@ async function main() {
   fs.writeFileSync('./runtimeCode/runtimeBytecodeProtocolFee.txt', runtimeBytecodeProtocolFee.substring(2));
   // deploy rate provider
   const RateProviderFactory = await ethers.getContractFactory('RateProvider');
-  const rateProvider = await RateProviderFactory.deploy({ gasLimit:10000 });
+  const rateProvider = await RateProviderFactory.deploy({ gasLimit: 1000 });
   console.log('Contract rate provider deployed to:', rateProvider.address);
   fs.writeFileSync('./creationCode/creationRateProvider.txt', RateProviderFactory.bytecode.substring(2));
   const runtimeBytecodeRateProvider = await ethers.provider.getCode(rateProvider.address);
   fs.writeFileSync('./runtimeCode/runtimeBytecodeRateProvider.txt', runtimeBytecodeRateProvider.substring(2));
   // deploy the other rate provider
   const RateProviderFactory2 = await ethers.getContractFactory('RateProvider');
-  const rateProvider2 = await RateProviderFactory2.deploy({ gasLimit:10000 });
+  const rateProvider2 = await RateProviderFactory2.deploy({ gasLimit: 1000 });
   console.log('Contract rate provider 2 deployed to:', rateProvider2.address);
   fs.writeFileSync('./creationCode/creationRateProvider2.txt', RateProviderFactory.bytecode.substring(2));
   const runtimeBytecodeRateProvider2 = await ethers.provider.getCode(rateProvider.address);
   fs.writeFileSync('./runtimeCode/runtimeBytecodeRateProvider2.txt', runtimeBytecodeRateProvider2.substring(2));
 
+  const RateProviderFactory3 = await ethers.getContractFactory('RateProvider');
+  const rateProvider3 = await RateProviderFactory3.deploy({ gasLimit: 1000 });
+  console.log('Contract rate provider 3 deployed to:', rateProvider3.address);
   const composableStablePoolFactory = await ethers.getContractFactory('ComposableStablePoolFactory');
   const composableStablePoolFactoryParams = {
     vault: vault.address,
@@ -181,7 +184,7 @@ async function main() {
     composableStablePoolFactoryParams.poolVersion,
     composableStablePoolFactoryParams.initialPauseWindowDuration,
     composableStablePoolFactoryParams.bufferPeriodDuration,
-    { gasLimit:10000 }
+    { gasLimit: 1000 }
   );
 
   console.log('Contract composableStablePoolFactory deployed to:', composableStablePoolFactoryContract.address);
@@ -258,17 +261,15 @@ async function main() {
   // const events = res.events?.filter((e) => e.event && e.event === 'PoolCreated');
   // const xx = await ethers.getContractAt('ComposableStablePool', events[0].args[0]);
   // console.log('Contract createPool deployed to:', events[0].args[0]);
+  console.log([erc20.address, erc202.address, erc203.address].sort());
+  console.log([rateProvider.address, rateProvider2.address, rateProvider3.address].sort());
   const poolParams = {
     vault: vault.address,
     protocolFeeProvider: protocolFeePercentagesProvider.address,
     name: 'My Stable Pool',
     symbol: 'MSP',
     tokens: [erc20.address, erc202.address, erc203.address].sort(),
-    rateProviders: [
-      '0x0000000000000000000000000000000000000000',
-      '0x0000000000000000000000000000000000000000',
-      '0x0000000000000000000000000000000000000000',
-    ].sort(),
+    rateProviders: [rateProvider.address, rateProvider2.address, rateProvider3.address].sort(),
     tokenRateCacheDurations: [0, 0, 0],
     exemptFromYieldProtocolFeeFlags: [false, false, false],
     amplificationParameter: BigInt('1'),
@@ -305,8 +306,8 @@ async function main() {
     './creationCode/creationCodePool.txt',
     ContractFactory.bytecode.substring(2) + encodedParams5.slice(2)
   );
-  const contract = await ContractFactory.deploy(poolParams, { gasLimit:10000 });
-  console.log('ppol deployed to:', contract.address);
+  const contract = await ContractFactory.deploy(poolParams, { gasLimit: 1000 });
+  console.log('pool deployed to:', contract.address);
   const runtimeBytecode = await ethers.provider.getCode(contract.address);
   fs.writeFileSync('./runtimeCode/runtimeBytecode.txt', runtimeBytecode.substring(2));
   const poolId = await contract.getPoolId();
@@ -370,7 +371,7 @@ async function main() {
       fromInternalBalance: false,
       userData: StablePoolEncoder.joinInit(amountsIn),
     },
-    { gasLimit:10000 }
+    { gasLimit: 1000 }
   );
   await txJoin.wait();
 
@@ -535,7 +536,7 @@ async function main() {
     minAmountsOut: [
       ethers.utils.parseEther('0'),
       ethers.utils.parseEther('0'),
-      ethers.utils.parseEther('0'), 
+      ethers.utils.parseEther('0'),
       ethers.utils.parseEther('0'),
     ],
     userData: StablePoolEncoder.exitExactBptInForTokensOut(ethers.utils.parseEther('100000000')),

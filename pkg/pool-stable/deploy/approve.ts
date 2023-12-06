@@ -43,19 +43,24 @@ async function main() {
     { gasLimit: 30000000 }
   );
 
-    const erc20ApprovalTx = await erc20.populateTransaction.approve(
-      jsonData.vault,
-      ethers.utils.parseEther(jsonData.approveCall.amount)
-    );
+  const erc20ApprovalTx = await erc20.populateTransaction.approve(
+    jsonData.vault,
+    ethers.utils.parseEther(jsonData.approveCall.amount)
+  );
 
-    console.log('approve erc20 bytecode', erc20ApprovalTx);
+  console.log('approve erc20 bytecode', erc20ApprovalTx);
+  console.log('balance bytecode', await erc20.populateTransaction.balanceOf(jsonData.vault));
 
-    const erc202ApprovalTx = await erc202.populateTransaction.approve(
-      jsonData.vault,
-      ethers.utils.parseEther(jsonData.approveCall.amount)
-    );
+  console.log(
+    'alloance bytecode',
+    await erc20.populateTransaction.allowance('0x7B7AB20f75B691E90c546e89E41aA23b0A821444', jsonData.vault)
+  );
+  const erc202ApprovalTx = await erc202.populateTransaction.approve(
+    jsonData.vault,
+    ethers.utils.parseEther(jsonData.approveCall.amount)
+  );
 
-    console.log('approve erc201 bytecode', erc202ApprovalTx);
+  console.log('approve erc201 bytecode', erc202ApprovalTx);
 }
 
 main()
