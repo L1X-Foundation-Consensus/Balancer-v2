@@ -1,10 +1,10 @@
 {
     "dumpPath": "./creationCode",
     "owner": "0x75104938baa47c54a86004ef998cc76c2e616281",
-    "vault": "0xE09fe77782dfb079C11e1dDABe3F27086CebBD70",
+    "vault": "0x1EbE1CdE0D6E05635cEFe244439d12973b7f04c0",
     "protocol": "0xb95a53d594dd219604131188bafcf05512fbc8cd",
-    "erc20": "0x1ce8ee2eb67f48c2e136039a2b8bdf80ca032380",
-    "erc201": "0x62d20b5ffb991d673b80ced35faf89903a43183e",
+    "erc20": "0x11297a86aBCB44B5f992747102f455eD0d760C17",
+    "erc201": "0x81AFB5Cb78Feadf9eC66915a1b12A009CC50f288",
     "rateProvider": "0xf48738e24e86622465f7a53d3cc863febccfdc69",
     "rateProvider1": "0x3bfdb00ad0c243316f72f82ed718ea7afd76deab",
     "authorizer": "0x06210c48ed1a75e31fc9294dfe7cf04597cdd311",
@@ -13,14 +13,14 @@
         "amount": "1000000000"
     },
     "TokenListByPoolIdCall": {
-        "poolId": "0x8890642a6bc5d56acb81b968618b9a3c55e3769d000000000000000000000000"
+        "poolId": "0x492a783a6cca860397f579e43319ea1032e92405000000000000000000000000"
     },
     "initPoolCall": {
         "tokenInfo": [
-            "0x3a04015F1279b5eA19B5Cc12DAF24c61818B3Aaa",
-            "0x8890642A6Bc5d56acb81b968618B9a3C55e3769d",
-            "0xA40E9B1F5420F228526226798B145E69A419da70",
-            "0xCF725479563C938F8E09AF682C01c90D7Adc8972"
+            "0x11297a86aBCB44B5f992747102f455eD0d760C17",
+            "0x492A783A6cca860397f579e43319ea1032E92405",
+            "0x81AFB5Cb78Feadf9eC66915a1b12A009CC50f288",
+            "0x97E60C286703fd5172d223992bE95125F2D07e24"
         ],
         "maxAmountsIn": [
             "10000000000000000",
@@ -38,18 +38,22 @@
     },
     "joinPoolCall": {
         "tokenInfo": [
-            "0x7B7AB20f75B691E90c546e89E41aA23b0A821444",
-            "0x7B7AB20f75B691E90c546e89E41aA23b0A821444",
-            "0x7B7AB20f75B691E90c546e89E41aA23b0A821444"
+            "0x11297a86aBCB44B5f992747102f455eD0d760C17",
+            "0x492A783A6cca860397f579e43319ea1032E92405",
+            "0x81AFB5Cb78Feadf9eC66915a1b12A009CC50f288",
+            "0x97E60C286703fd5172d223992bE95125F2D07e24"
         ],
         "amountsIn": [
+            "10000",
+            "10000",
             "10000",
             "10000"
         ],
         "maxAmountsIn": [
-            "10000",
-            "10000",
-            "10000"
+            "500000000",
+            "500000000",
+            "500000000",
+            "500000000"
         ],
         "address": "0x7B7AB20f75B691E90c546e89E41aA23b0A821444"
     }

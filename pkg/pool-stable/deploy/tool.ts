@@ -57,6 +57,10 @@ export async function getPoolInstance() {
     { gasLimit: 30000000 }
   );
 
+  const balancerQueriesFactory = await ethers.getContractFactory('BalancerQueries');
+  const balancerQueries = await balancerQueriesFactory.deploy(vault.address);
+  console.log('Contract balancerQueries deployed to:', balancerQueries.address);
+
   const ProtocolFeePercentagesProviderFactory = await ethers.getContractFactory('ProtocolFeePercentagesProvider');
   const protocolFeePercentagesProvider = await ProtocolFeePercentagesProviderFactory.deploy(vault.address, 100, 200, {
     gasLimit: 30000000,
@@ -107,7 +111,7 @@ export async function getPoolInstance() {
   const ContractFactory = await ethers.getContractFactory('ComposableStablePool');
 
   const contract = await ContractFactory.deploy(poolParams, { gasLimit: 30000000 });
-  return { pool: contract, vault: vault };
+  return { pool: contract, vault: vault, query: balancerQueries };
 }
 
 export function toBytes32(num: any) {

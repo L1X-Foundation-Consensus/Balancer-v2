@@ -12,6 +12,11 @@ async function main() {
   console.log('JSON Data:', jsonData);
 
   const contract = await getPoolInstance();
+  const initVaule = [];
+  for (let i = 0; i < jsonData.initPoolCall.amountsIn.length; i++) {
+    initVaule.push(ethers.utils.parseEther(jsonData.initPoolCall.amountsIn[i]));
+  }
+  console.log('init pool bytecode', initVaule);
   console.log(
     'init pool bytecode',
     await contract.vault.populateTransaction.joinPool(
@@ -27,7 +32,7 @@ async function main() {
           ethers.utils.parseEther(jsonData.initPoolCall.maxAmountsIn[3]),
         ],
         fromInternalBalance: false,
-        userData: StablePoolEncoder.joinInit(jsonData.initPoolCall.amountsIn),
+        userData: StablePoolEncoder.joinInit(initVaule),
       }
     )
   );

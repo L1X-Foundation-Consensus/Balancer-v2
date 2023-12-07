@@ -29,6 +29,12 @@ async function main() {
     version: '1.0.0',
   };
 
+  const initVaule = [];
+
+  for (let i = 0; i < jsonData.joinPoolCall.amountsIn.length; i++) {
+    initVaule.push(ethers.utils.parseEther(jsonData.joinPoolCall.amountsIn[i]));
+  }
+
   const contract = await getPoolInstance();
   console.log(
     'join pool bytecode',
@@ -40,7 +46,7 @@ async function main() {
         assets: jsonData.joinPoolCall.tokenInfo,
         maxAmountsIn: jsonData.joinPoolCall.maxAmountsIn,
         fromInternalBalance: false,
-        userData: StablePoolEncoder.joinExactTokensInForBPTOut(jsonData.joinPoolCall.amountsIn, 0),
+        userData: StablePoolEncoder.joinExactTokensInForBPTOut(initVaule, 0),
       }
     )
   );
