@@ -9,32 +9,32 @@ contract Did {
     event DIDUpdated(string did, string didDocument);
     event DIDRevoked(string did);
 
-    function createDID(string memory did, string memory didDocument) external {
+    function createDID(string memory did, string memory didDocument, bytes memory signature) external {
         require(bytes(didDocuments[did]).length == 0, "DID already exists");
 
-        // bytes32 _msgHash = getMessageHash(did, didDocument);
-        // bytes32 _ethSignedMessageHash = getEthSignedMessageHash(_msgHash);
-        // require(_verifySignature(_ethSignedMessageHash, signature, msg.sender), "Invalid signature");
+        bytes32 _msgHash = getMessageHash(did, didDocument);
+        bytes32 _ethSignedMessageHash = getEthSignedMessageHash(_msgHash);
+        require(_verifySignature(_ethSignedMessageHash, signature, msg.sender), "Invalid signature");
 
         didDocuments[did] = didDocument;
 
         emit DIDCreated(did, didDocument);
     }
 
-    function updateDID(string memory did, string memory didDocument) external {
+    function updateDID(string memory did, string memory didDocument, bytes memory signature) external {
         require(bytes(didDocuments[did]).length != 0, "DID does not exist");
-        // bytes32 _msgHash = getMessageHash(did, didDocument);
-        // bytes32 _ethSignedMessageHash = getEthSignedMessageHash(_msgHash);
-        // require(_verifySignature(_ethSignedMessageHash, signature, msg.sender), "Invalid signature");
+        bytes32 _msgHash = getMessageHash(did, didDocument);
+        bytes32 _ethSignedMessageHash = getEthSignedMessageHash(_msgHash);
+        require(_verifySignature(_ethSignedMessageHash, signature, msg.sender), "Invalid signature");
         didDocuments[did] = didDocument;
 
         emit DIDUpdated(did, didDocument);
     }
 
-    function revokeDID(string memory did) external {
-        // bytes32 _msgHash = getMessageHash(did, didDocuments[did]);
-        // bytes32 _ethSignedMessageHash = getEthSignedMessageHash(_msgHash);
-        // require(_verifySignature(_ethSignedMessageHash, signature, msg.sender), "Invalid signature");
+    function revokeDID(string memory did, bytes memory signature) external {
+        bytes32 _msgHash = getMessageHash(did, didDocuments[did]);
+        bytes32 _ethSignedMessageHash = getEthSignedMessageHash(_msgHash);
+        require(_verifySignature(_ethSignedMessageHash, signature, msg.sender), "Invalid signature");
         delete didDocuments[did];
         emit DIDRevoked(did);
     }
@@ -47,8 +47,8 @@ contract Did {
         return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", _messageHash));
     }
 
-    function getMessageHash(string memory didDocument) public pure returns (bytes32) {
-        return keccak256(abi.encodePacked(didDocument));
+    function getMessageHash(string memory did, string memory didDocument) public pure returns (bytes32) {
+        return keccak256(abi.encodePacked(did, didDocument));
     }
 
     function _verifySignature(bytes32 _msgHash, bytes memory _signature, address _sender) internal pure returns (bool) {
