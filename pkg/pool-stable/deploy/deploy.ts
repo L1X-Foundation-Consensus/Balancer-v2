@@ -137,18 +137,7 @@ async function main() {
     gasLimit: 30000000,
   });
   console.log('Contract protovol fee deployed to:', protocolFeePercentagesProvider.address);
-  const encodedParams4 = ProtocolFeePercentagesProviderFactory.interface.encodeDeploy([
-    '0x7ba9268c354b2f0156abdec86ca0ac8e8135673f', // Once you deply the new vault, update the protocol fee with vault
-    100,
-    200,
-  ]);
-  fs.writeFileSync(
-    './creationCode/creationProtocolFee.txt',
-    ProtocolFeePercentagesProviderFactory.bytecode.substring(2) + encodedParams4.slice(2)
-  );
 
-  const runtimeBytecodeProtocolFee = await ethers.provider.getCode(protocolFeePercentagesProvider.address);
-  fs.writeFileSync('./runtimeCode/runtimeBytecodeProtocolFee.txt', runtimeBytecodeProtocolFee.substring(2));
   // deploy rate provider
   const RateProviderFactory = await ethers.getContractFactory('RateProvider');
   const rateProvider = await RateProviderFactory.deploy({ gasLimit: 30000000 });
@@ -255,8 +244,9 @@ async function main() {
   //   // make 1 to bytes32
   //   ethers.utils.formatBytes32String('1')
   // ); //bytes32 salt))
-
+  // console.log('createPool', createPool);
   // const res = await createPool.wait();
+  // console.log('Res', res);
 
   // const events = res.events?.filter((e) => e.event && e.event === 'PoolCreated');
   // const xx = await ethers.getContractAt('ComposableStablePool', events[0].args[0]);
@@ -313,10 +303,11 @@ async function main() {
   const poolId = await contract.getPoolId();
   // const poolId2 = await xx.getPoolId();
   console.log('pool id', poolId);
+
   // console.log('pool id', poolId2);
-  await erc20.approve(vault.address, ethers.utils.parseEther('1000000000'));
-  await erc202.approve(vault.address, ethers.utils.parseEther('1000000000'));
-  await erc203.approve(vault.address, ethers.utils.parseEther('1000000000'));
+  await erc20.approve(vault.address, ethers.utils.parseEther('1000000000'), deployer.address);
+  await erc202.approve(vault.address, ethers.utils.parseEther('1000000000'), deployer.address);
+  await erc203.approve(vault.address, ethers.utils.parseEther('1000000000'), deployer.address);
   console.log(' erc20 balance', bignumberToNumber(await erc20.balanceOf(deployer.address)));
   console.log(' erc202 balance', bignumberToNumber(await erc202.balanceOf(deployer.address)));
   console.log(' erc203 balance', bignumberToNumber(await erc203.balanceOf(deployer.address)));
@@ -379,13 +370,13 @@ async function main() {
   await erc20.transfer(bob.address, ethers.utils.parseEther('1000000'));
   await erc202.transfer(bob.address, ethers.utils.parseEther('1000000'));
   await erc203.transfer(bob.address, ethers.utils.parseEther('1000000'));
-  await erc20.connect(bob).approve(vault.address, ethers.utils.parseEther('100000'));
+  await erc20.approve(vault.address, ethers.utils.parseEther('100000'), bob.address);
   console.log(
     'bob approve bytecode',
-    await erc20.populateTransaction.approve(vault.address, ethers.utils.parseEther('100000'))
+    await erc20.populateTransaction.approve(vault.address, ethers.utils.parseEther('100000'), deployer.address)
   );
-  await erc202.connect(bob).approve(vault.address, ethers.utils.parseEther('100000'));
-  await erc203.connect(bob).approve(vault.address, ethers.utils.parseEther('100000'));
+  await erc202.approve(vault.address, ethers.utils.parseEther('100000'), bob.address);
+  await erc203.approve(vault.address, ethers.utils.parseEther('100000'), bob.address);
   console.log('bob balance', bignumberToNumber(await erc20.balanceOf(bob.address)));
   console.log('bob balance', bignumberToNumber(await erc202.balanceOf(bob.address)));
   console.log('bpt bob balance', bignumberToNumber(await contract.balanceOf(bob.address)));
@@ -413,7 +404,7 @@ async function main() {
       max.push(MAX_UINT256);
     } else {
       tokenInfoBob.push(tokenInfo[0][i]);
-      max.push(0);
+      max.push(MAX_UINT256);
     }
   }
   console.log(tokenInfo[0], tokenInfoBob, amountsInBob);
@@ -423,24 +414,31 @@ async function main() {
 
   const queryJoin = await balancerQueries.queryJoin(poolId, sender, recipient, {
     assets: tokenInfoBob,
-    maxAmountsIn: max,
+    maxAmountsIn: [MAX_UINT256, MAX_UINT256, MAX_UINT256, MAX_UINT256],
     fromInternalBalance: false,
-    userData: StablePoolEncoder.joinExactTokensInForBPTOut(amountsInBob, 0),
+    userData: StablePoolEncoder.joinExactTokensInForBPTOut(
+      [0, ethers.utils.parseUnits('1000', 18), ethers.utils.parseUnits('1000', 18)],
+      0
+    ),
   });
 
   console.log('estimated join amount out: ', queryJoin);
-  const txJoinBob = await vault.connect(bob).joinPool(
+  const txJoinBob = await vault.joinPool(
     poolId, // pool id
-    bob.address,
-    bob.address,
+    deployer.address,
+    deployer.address,
     {
       assets: tokenInfoBob,
-      maxAmountsIn: max,
+      maxAmountsIn: [MAX_UINT256, MAX_UINT256, MAX_UINT256, MAX_UINT256],
       fromInternalBalance: false,
-      userData: StablePoolEncoder.joinExactTokensInForBPTOut(amountsInBob, 0),
+      userData: StablePoolEncoder.joinExactTokensInForBPTOut(
+        [0, ethers.utils.parseUnits('1000', 18), ethers.utils.parseUnits('1000', 18)],
+        0
+      ),
     }
   );
   await txJoinBob.wait();
+
   console.log('bob balance', bignumberToNumber(await erc20.balanceOf(bob.address)));
   console.log('bob balance', bignumberToNumber(await erc202.balanceOf(bob.address)));
   console.log('bpt bob balance', bignumberToNumber(await contract.balanceOf(bob.address)));

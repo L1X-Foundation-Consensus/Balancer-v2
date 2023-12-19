@@ -7,7 +7,7 @@ const { ethers } = require('hardhat');
 const fs = require('fs');
 
 // give me random address
-const alice = '0x7B7AB20f75B691E90c546e89E41aA23b0A821444';
+const alice = '0x75104938bAa47c54a86004eF998CC76C2e616289';
 async function main() {
   const signers = await ethers.getSigners();
   const deployer = signers[0];
@@ -22,18 +22,8 @@ async function main() {
   };
   console.log(bignumberToNumber(ethers.utils.parseEther('1000000000')));
   const erc20 = await erc20Factory.deploy(erc20Params._name, erc20Params._symbol, erc20Params._decimals, {
-    gasLimit: 30000000,
+    gasLimit:30000000,
   });
-  // write creation code to file
-  const encodedParams = erc20Factory.interface.encodeDeploy([
-    erc20Params._name,
-    erc20Params._symbol,
-    erc20Params._decimals,
-  ]);
-
-  fs.writeFileSync('./creationCode/creationCode20.txt', erc20Factory.bytecode.substring(2) + encodedParams.slice(2));
-  const runtimeBytecode20 = await ethers.provider.getCode(erc20.address);
-  fs.writeFileSync('./runtimeCode/runtimeBytecode20.txt', runtimeBytecode20.substring(2));
 
   console.log('Contract USDC deployed to:', erc20.address);
   const erc20Params2 = {
@@ -42,18 +32,8 @@ async function main() {
     _decimals: 18,
   };
   const erc202 = await erc20Factory.deploy(erc20Params2._name, erc20Params2._symbol, erc20Params2._decimals, {
-    gasLimit: 30000000,
+    gasLimit:30000000,
   });
-  // write creation code to file
-  const encodedParams2 = erc20Factory.interface.encodeDeploy([
-    erc20Params2._name,
-    erc20Params2._symbol,
-    erc20Params2._decimals,
-  ]);
-
-  fs.writeFileSync('./creationCode/creationCode202.txt', erc20Factory.bytecode.substring(2) + encodedParams2.slice(2));
-  const runtimeBytecode202 = await ethers.provider.getCode(erc20.address);
-  fs.writeFileSync('./runtimeCode/runtimeBytecode202.txt', runtimeBytecode202.substring(2));
 
   console.log('Contract USDT deployed to:', erc202.address);
   const erc20Params3 = {
@@ -62,35 +42,23 @@ async function main() {
     _decimals: 18,
   };
   const erc203 = await erc20Factory.deploy(erc20Params3._name, erc20Params3._symbol, erc20Params3._decimals, {
-    gasLimit: 30000000,
+    gasLimit:30000000,
   });
   console.log('Contract BUSD deployed to:', erc203.address);
 
   const wethFactory = await ethers.getContractFactory('WETH');
-  const weth = await wethFactory.deploy({ gasLimit: 30000000 });
+  const weth = await wethFactory.deploy({ gasLimit:30000000 });
   console.log('Contract weth deployed to:', weth.address);
   // write weth creation code to file
-
-  fs.writeFileSync('./creationCode/creationWeth.txt', wethFactory.bytecode.substring(2));
-  const runtimeBytecodeweth = await ethers.provider.getCode(weth.address);
-  fs.writeFileSync('./runtimeCode/runtimeBytecodeweth.txt', runtimeBytecodeweth.substring(2));
 
   const AuthorizerFactory = await ethers.getContractFactory('Authorizer');
   // 100 to soldity bytes32
 
   const authorizer = await AuthorizerFactory.deploy(deployer.address, {
-    gasLimit: 30000000,
+    gasLimit:30000000,
   });
   console.log('Contract authorizer deployed to:', authorizer.address);
   // write weth creation code to file
-
-  fs.writeFileSync(
-    './creationCode/creationAuthorizer.txt',
-    AuthorizerFactory.bytecode.substring(2) +
-      AuthorizerFactory.interface.encodeDeploy(['0x75104938baa47c54a86004ef998cc76c2e616289']).slice(2)
-  );
-  const runtimeBytecodeAuthorizer = await ethers.provider.getCode(authorizer.address);
-  fs.writeFileSync('./runtimeCode/runtimeBytecodeAuthorizer.txt', runtimeBytecodeAuthorizer.substring(2));
 
   const VaultFactory = await ethers.getContractFactory('Vault');
   const vaultParams = {
@@ -105,129 +73,56 @@ async function main() {
     vaultParams.weth,
     vaultParams.pauseWindowDuration,
     vaultParams.bufferPeriodDuration,
-    { gasLimit: 30000000 }
+    { gasLimit:30000000 }
   );
 
   console.log('Contract vault deployed to:', vault.address);
-
-  const encodedParams3 = VaultFactory.interface.encodeDeploy([
-    '0x98f5708a5e6ef3e03cbf7f3913baf7596cb06f78', // change it if you deploy new authorizer
-    '0x75efbcee8c37849b63287a1fcd367368a5f0ab80', // change it if you deploy new weth
-    vaultParams.pauseWindowDuration,
-    vaultParams.bufferPeriodDuration,
-  ]);
-  fs.writeFileSync('./creationCode/creationVault.txt', VaultFactory.bytecode.substring(2) + encodedParams3.slice(2));
-  const runtimeBytecodevault = await ethers.provider.getCode(vault.address);
-  fs.writeFileSync('./runtimeCode/runtimeBytecodevault.txt', runtimeBytecodevault.substring(2));
 
   const balancerQueriesFactory = await ethers.getContractFactory('BalancerQueries');
   const balancerQueries = await balancerQueriesFactory.deploy(vault.address);
   console.log('Contract balancerQueries deployed to:', balancerQueries.address);
 
-  const encodedParams9 = balancerQueriesFactory.interface.encodeDeploy([vault.address]);
-  fs.writeFileSync(
-    './creationCode/creationBalancerQueries.txt',
-    balancerQueriesFactory.bytecode.substring(2) + encodedParams9.slice(2)
-  );
-  const runtimeBytecodebalancerQueries = await ethers.provider.getCode(balancerQueries.address);
-  fs.writeFileSync('./runtimeCode/runtimeBytecodeBalancerQueries.txt', runtimeBytecodebalancerQueries.substring(2));
-
   // deploy ProtocolFeePercentagesProvider
   const ProtocolFeePercentagesProviderFactory = await ethers.getContractFactory('ProtocolFeePercentagesProvider');
   const protocolFeePercentagesProvider = await ProtocolFeePercentagesProviderFactory.deploy(vault.address, 100, 200, {
-    gasLimit: 30000000,
+    gasLimit:30000000,
   });
   console.log('Contract protovol fee deployed to:', protocolFeePercentagesProvider.address);
-  const encodedParams4 = ProtocolFeePercentagesProviderFactory.interface.encodeDeploy([
-    '0x7ba9268c354b2f0156abdec86ca0ac8e8135673f', // Once you deply the new vault, update the protocol fee with vault
-    100,
-    200,
-  ]);
-  fs.writeFileSync(
-    './creationCode/creationProtocolFee.txt',
-    ProtocolFeePercentagesProviderFactory.bytecode.substring(2) + encodedParams4.slice(2)
-  );
 
-  const runtimeBytecodeProtocolFee = await ethers.provider.getCode(protocolFeePercentagesProvider.address);
-  fs.writeFileSync('./runtimeCode/runtimeBytecodeProtocolFee.txt', runtimeBytecodeProtocolFee.substring(2));
   // deploy rate provider
   const RateProviderFactory = await ethers.getContractFactory('RateProvider');
-  const rateProvider = await RateProviderFactory.deploy({ gasLimit: 30000000 });
+  const rateProvider = await RateProviderFactory.deploy({ gasLimit:30000000 });
   console.log('Contract rate provider deployed to:', rateProvider.address);
-  fs.writeFileSync('./creationCode/creationRateProvider.txt', RateProviderFactory.bytecode.substring(2));
-  const runtimeBytecodeRateProvider = await ethers.provider.getCode(rateProvider.address);
-  fs.writeFileSync('./runtimeCode/runtimeBytecodeRateProvider.txt', runtimeBytecodeRateProvider.substring(2));
+
   // deploy the other rate provider
   const RateProviderFactory2 = await ethers.getContractFactory('RateProvider');
-  const rateProvider2 = await RateProviderFactory2.deploy({ gasLimit: 30000000 });
+  const rateProvider2 = await RateProviderFactory2.deploy({ gasLimit:30000000 });
   console.log('Contract rate provider 2 deployed to:', rateProvider2.address);
-  fs.writeFileSync('./creationCode/creationRateProvider2.txt', RateProviderFactory.bytecode.substring(2));
-  const runtimeBytecodeRateProvider2 = await ethers.provider.getCode(rateProvider.address);
-  fs.writeFileSync('./runtimeCode/runtimeBytecodeRateProvider2.txt', runtimeBytecodeRateProvider2.substring(2));
 
   const RateProviderFactory3 = await ethers.getContractFactory('RateProvider');
-  const rateProvider3 = await RateProviderFactory3.deploy({ gasLimit: 30000000 });
+  const rateProvider3 = await RateProviderFactory3.deploy({ gasLimit:30000000 });
   console.log('Contract rate provider 3 deployed to:', rateProvider3.address);
-  const composableStablePoolFactory = await ethers.getContractFactory('ComposableStablePoolFactory');
-  const composableStablePoolFactoryParams = {
-    vault: vault.address,
-    protocolFeeProvider: protocolFeePercentagesProvider.address,
-    factoryVersion: '1.0.0',
-    poolVersion: '1.0.0',
-    initialPauseWindowDuration: 0,
-    bufferPeriodDuration: 0,
-  };
+  // const composableStablePoolFactory = await ethers.getContractFactory('ComposableStablePoolFactory');
+  // const composableStablePoolFactoryParams = {
+  //   vault: vault.address,
+  //   protocolFeeProvider: protocolFeePercentagesProvider.address,
+  //   factoryVersion: '1.0.0',
+  //   poolVersion: '1.0.0',
+  //   initialPauseWindowDuration: 0,
+  //   bufferPeriodDuration: 0,
+  // };
 
-  const composableStablePoolFactoryContract = await composableStablePoolFactory.deploy(
-    composableStablePoolFactoryParams.vault,
-    composableStablePoolFactoryParams.protocolFeeProvider,
-    composableStablePoolFactoryParams.factoryVersion,
-    composableStablePoolFactoryParams.poolVersion,
-    composableStablePoolFactoryParams.initialPauseWindowDuration,
-    composableStablePoolFactoryParams.bufferPeriodDuration,
-    { gasLimit: 30000000 }
-  );
+  // const composableStablePoolFactoryContract = await composableStablePoolFactory.deploy(
+  //   composableStablePoolFactoryParams.vault,
+  //   composableStablePoolFactoryParams.protocolFeeProvider,
+  //   composableStablePoolFactoryParams.factoryVersion,
+  //   composableStablePoolFactoryParams.poolVersion,
+  //   composableStablePoolFactoryParams.initialPauseWindowDuration,
+  //   composableStablePoolFactoryParams.bufferPeriodDuration,
+  //   { gasLimit:30000000 }
+  // );
 
-  console.log('Contract composableStablePoolFactory deployed to:', composableStablePoolFactoryContract.address);
-  const encodedParams6 = composableStablePoolFactory.interface.encodeDeploy([
-    '0x91c0eb5c5a45997a7c4629efe15629b2af53b0a4',
-    '0xdb4a24f16ddfa5a36aa36a038645f9e35efd7837',
-    '1.0.0',
-    '1.0.0',
-    0,
-    0,
-  ]);
-  fs.writeFileSync(
-    './creationCode/creationCodePoolFactory.txt',
-    composableStablePoolFactory.bytecode.substring(2) + encodedParams6.slice(2)
-  );
-  const runtimeBytecodePoolFactory = await ethers.provider.getCode(composableStablePoolFactoryContract.address);
-
-  fs.writeFileSync('./runtimeCode/runtimeBytecodePoolFactory.txt', runtimeBytecodePoolFactory.substring(2));
-
-  const abi = [
-    'function create(string name, string symbol, address[] tokens, uint256 amplificationParameter, address[] rateProviders, uint256[] tokenRateCacheDurations, bool[] exemptFromYieldProtocolFeeFlags, uint256 swapFeePercentage, address owner, bytes32 salt)',
-  ];
-
-  // Create an instance of the contract interface
-  const iface = new ethers.utils.Interface(abi);
-
-  // Define the function arguments
-  const args = [
-    'My Stable Pool',
-    'MSP',
-    ['0x680bfd4636f924c37ed9d1c95b4fc7e7fe9d80e1', '0x17d47c886f2686d42f3ea43b44045e56ea9d975a'].sort(),
-    BigInt('1'),
-    ['0xc400d457404897bb08aa44b93431af79c86fe212', '0xeb0285df6e591e1b6567bd2c2c83792b69517068'].sort(),
-    [0, 0],
-    [false, false],
-    BigInt('10000000000000000'),
-    '0x75104938baa47c54a86004ef998cc76c2e616289',
-    ethers.utils.formatBytes32String('1'),
-  ];
-
-  // Generate the calldata
-  const calldata = iface.encodeFunctionData('create', args);
+  // console.log('Contract composableStablePoolFactory deployed to:', composableStablePoolFactoryContract.address);
 
   // const createPool = await composableStablePoolFactoryContract.create(
   //   'My Stable Pool pool',
@@ -281,61 +176,32 @@ async function main() {
     version: '1.0.0',
   };
   const ContractFactory = await ethers.getContractFactory('ComposableStablePool');
-  const encodedParams5 = ContractFactory.interface.encodeDeploy([
-    // for deploying new stable pool directly
-    {
-      vault: '0x7ba9268c354b2f0156abdec86ca0ac8e8135673f', // change
-      protocolFeeProvider: '0xeda67b104377ffa4e7af8d97503e06dddbb24cdf', // change
-      name: 'wETHUSDC-wETHUSDT',
-      symbol: 'wETHUSDC-wETHUSDT',
-      tokens: ['0x98c16b40e86648ddfa73ac8d1730792ab735b457', '0xa7afd0642cfcadacaee88cdf2b84711a1b11d025'].sort(), // change
-      rateProviders: [
-        '0x10e32d5cdd1122cf506575702f12b66f0d9ac80b', // change
-        '0x6c11eee685845d7decb59802ba64f11acb008470', // change
-      ].sort(),
-      tokenRateCacheDurations: [0, 0],
-      exemptFromYieldProtocolFeeFlags: [false, false],
-      amplificationParameter: BigInt('1'),
-      swapFeePercentage: fp(0.1),
-      pauseWindowDuration: 0,
-      bufferPeriodDuration: 0,
-      owner: '0x75104938baa47c54a86004ef998cc76c2e616289',
-      version: '1.0.0',
-    },
-  ]);
-  fs.writeFileSync(
-    './creationCode/creationCodePool.txt',
-    ContractFactory.bytecode.substring(2) + encodedParams5.slice(2)
-  );
-  const contract = await ContractFactory.deploy(poolParams, { gasLimit: 30000000 });
+
+  const contract = await ContractFactory.deploy(poolParams, { gasLimit:30000000 });
   console.log('pool deployed to:', contract.address);
-  const runtimeBytecode = await ethers.provider.getCode(contract.address);
-  fs.writeFileSync('./runtimeCode/runtimeBytecode.txt', runtimeBytecode.substring(2));
+
   const poolId = await contract.getPoolId();
-  // const poolId2 = await xx.getPoolId();
+  // const poolId = contract.address + '000000000000000000000000';
   console.log('pool id', poolId);
-  console.log('owner', await erc20.owner());
-  console.log('owner', await erc202.owner());
-  console.log('owner', await erc203.owner());
-  console.log('owner', deployer.address);
+
   await erc20
     .connect(deployer)
-    .deposit(ethers.utils.parseEther('10000000000'), bob.address, vault.address, { gasLimit: 30000000 });
+    .deposit(ethers.utils.parseEther('10000000000'), bob.address, vault.address, { gasLimit:30000000 });
   await erc202
     .connect(deployer)
-    .deposit(ethers.utils.parseEther('10000000000'), bob.address, vault.address, { gasLimit: 30000000 });
+    .deposit(ethers.utils.parseEther('10000000000'), bob.address, vault.address, { gasLimit:30000000 });
   await erc203
     .connect(deployer)
-    .deposit(ethers.utils.parseEther('10000000000'), bob.address, vault.address, { gasLimit: 30000000 });
+    .deposit(ethers.utils.parseEther('10000000000'), bob.address, vault.address, { gasLimit:30000000 });
   await erc20
     .connect(deployer)
-    .deposit(ethers.utils.parseEther('1000000000'), deployer.address, vault.address, { gasLimit: 30000000 });
+    .deposit(ethers.utils.parseEther('1000000000'), deployer.address, vault.address, { gasLimit:30000000 });
   await erc202
     .connect(deployer)
-    .deposit(ethers.utils.parseEther('1000000000'), deployer.address, vault.address, { gasLimit: 30000000 });
+    .deposit(ethers.utils.parseEther('1000000000'), deployer.address, vault.address, { gasLimit:30000000 });
   await erc203
     .connect(deployer)
-    .deposit(ethers.utils.parseEther('1000000000'), deployer.address, vault.address, { gasLimit: 30000000 });
+    .deposit(ethers.utils.parseEther('1000000000'), deployer.address, vault.address, { gasLimit:30000000 });
   const poolDetails = await vault.getPool(poolId);
   // await vault.setRelayerApproval(deployer.address, deployer.address, true);
 
@@ -380,7 +246,7 @@ async function main() {
       fromInternalBalance: false,
       userData: StablePoolEncoder.joinInit(amountsIn),
     },
-    { gasLimit: 30000000 }
+    { gasLimit:30000000 }
   );
   await txJoin.wait();
 
@@ -519,7 +385,7 @@ async function main() {
     },
     0,
     MAX_UINT256,
-    { gasLimit: 30000000 }
+    { gasLimit:30000000 }
   );
   await swap.wait();
   tokenInfo = await vault.getPoolTokens(poolId);
@@ -552,17 +418,23 @@ async function main() {
   });
   console.log('estimated exit amount out: ', queryExit);
 
-  const txExit = await vault.exitPool(poolId, bob.address, bob.address, {
-    assets: tokenInfo[0],
-    minAmountsOut: [
-      ethers.utils.parseEther('0'),
-      ethers.utils.parseEther('0'),
-      ethers.utils.parseEther('0'),
-      ethers.utils.parseEther('0'),
-    ],
-    userData: StablePoolEncoder.exitExactBptInForTokensOut(ethers.utils.parseEther('2999')),
-    toInternalBalance: false,
-  },{ gasLimit: 30000000});
+  const txExit = await vault.exitPool(
+    poolId,
+    bob.address,
+    bob.address,
+    {
+      assets: tokenInfo[0],
+      minAmountsOut: [
+        ethers.utils.parseEther('0'),
+        ethers.utils.parseEther('0'),
+        ethers.utils.parseEther('0'),
+        ethers.utils.parseEther('0'),
+      ],
+      userData: StablePoolEncoder.exitExactBptInForTokensOut(ethers.utils.parseEther('2999')),
+      toInternalBalance: false,
+    },
+    { gasLimit:30000000 }
+  );
   console.log(await txExit.await);
   tokenInfo = await vault.getPoolTokens(poolId);
   console.log(tokenInfo);

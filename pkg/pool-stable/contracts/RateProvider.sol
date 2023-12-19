@@ -19,17 +19,17 @@ import "@balancer-labs/v2-interfaces/contracts/pool-utils/IRateProvider.sol";
 import "@balancer-labs/v2-solidity-utils/contracts/math/FixedPoint.sol";
 
 contract RateProvider is IRateProvider {
-    uint256 internal _rate;
+    uint256 public rate;
 
     constructor() {
-        _rate = FixedPoint.ONE;
+        rate = FixedPoint.ONE;
     }
 
     function getRate() external view override returns (uint256) {
-        return _rate;
+        return rate;
     }
 
     function updateRate(uint256 newRate) external {
-        _rate = newRate;
+        rate = newRate;
     }
 }

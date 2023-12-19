@@ -9,10 +9,14 @@ async function main() {
   const jsonData = JSON.parse(data);
   console.log('JSON Data:', jsonData);
 
+  // const contract = (await getPoolInstance()).pool;
 
-  const contract = (await getPoolInstance()).pool;
-  console.log('ppol deployed to:', contract.address);
-  console.log('pool id bytecode', await contract.populateTransaction.getPoolId());
+  const xx = await ethers.getContractAt('ComposableStablePool', '0x5DFC98A863E5Dcd05E7B4eEBE9b1F774D33f61D0'.toLowerCase());
+  console.log('pool address :', xx.address);
+  console.log('pool id bytecode', await xx.populateTransaction.getPoolId({gasLimit: 10000}));
+  const poolId = await xx.getPoolId();
+  console.log('ppol id :', poolId);
+  console.log('pool id bytecode', await xx.populateTransaction.getPoolId({gasLimit: 10000}));
 }
 
 main()
@@ -21,7 +25,6 @@ main()
     console.error(error);
     process.exit(1);
   });
-
 
 //   Deploying contracts with the account: 0x7B7AB20f75B691E90c546e89E41aA23b0A821444
 // 1000000000

@@ -16,9 +16,18 @@ task(TASK_COMPILE).setAction(overrideQueryFunctions);
 export default {
   networks: {
     localhost: {
-      url: 'http://127.0.0.1:8545',
-      // url: `http://54.214.8.200:50051`,
+      // url: 'http://127.0.0.1:8545',
+      url: 'http://54.214.8.200:50051',
+      // gas: 30000000,
       // accounts: [PRIVATE_KEY, SECOND_PRIVATE_KEY],
+    },
+
+    x: {
+      url: 'http://127.0.0.1:8545',
+    },
+
+    xx: {
+      url: 'http://0.0.0.0:50051',
     },
 
     hardhat: {
@@ -26,7 +35,7 @@ export default {
       allowUnlimitedContractSize: true,
     },
   },
- 
+
   solidity: {
     compilers: hardhatBaseConfig.compilers,
     // version: '0.7.1',
@@ -34,7 +43,7 @@ export default {
     // setting: {
     //   optimizer: {
     //     enabled: true,
-    //     runs: 20,
+    //     runs: 1,
     //   },
     // },
   },
