@@ -28,6 +28,7 @@ export default {
 
     xx: {
       url: 'http://0.0.0.0:50051',
+      // accounts: [PRIVATE_KEY, SECOND_PRIVATE_KEY],
     },
 
     hardhat: {

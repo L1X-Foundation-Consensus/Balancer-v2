@@ -29,13 +29,10 @@ async function main() {
       jsonData.joinPoolCall.address,
       jsonData.joinPoolCall.address,
       {
-        assets: jsonData.joinPoolCall.tokenInfo.sort(),
+        assets: jsonData.joinPoolCall.tokenInfo,
         maxAmountsIn: [MAX_UINT256, MAX_UINT256, MAX_UINT256, MAX_UINT256],
         fromInternalBalance: false,
-        userData: StablePoolEncoder.joinExactTokensInForBPTOut(
-          [ethers.utils.parseEther('1000'), ethers.utils.parseEther('1000'), ethers.utils.parseEther('1000')],
-          0
-        ),
+        userData: StablePoolEncoder.joinExactTokensInForBPTOut([0, ethers.utils.parseEther('1000'), 0], 0),
       }
     )
   );
@@ -60,6 +57,26 @@ async function main() {
       },
       0,
       MAX_UINT256
+    )
+  );
+
+  console.log(
+    'exit bytecode',
+    await contract.vault.populateTransaction.exitPool(
+      jsonData.TokenListByPoolIdCall.poolId,
+      jsonData.joinPoolCall.address,
+      jsonData.joinPoolCall.address,
+      {
+        assets: jsonData.joinPoolCall.tokenInfo,
+        minAmountsOut: [
+          ethers.utils.parseEther('0'),
+          ethers.utils.parseEther('0'),
+          ethers.utils.parseEther('0'),
+          ethers.utils.parseEther('0'),
+        ],
+        userData: StablePoolEncoder.exitExactBptInForTokensOut(ethers.utils.parseEther('100')),
+        toInternalBalance: false,
+      }
     )
   );
 }

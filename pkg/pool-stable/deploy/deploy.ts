@@ -365,7 +365,8 @@ async function main() {
     { gasLimit: 30000000 }
   );
   await txJoin.wait();
-
+  console.log('bpt for deployer', await contract.balanceOf(deployer.address));
+  console.log('pool info after iinit', await vault.getPoolTokens(poolId));
   // transfer erc20 to bob
   await erc20.transfer(bob.address, ethers.utils.parseEther('1000000'));
   await erc202.transfer(bob.address, ethers.utils.parseEther('1000000'));
@@ -422,6 +423,8 @@ async function main() {
     ),
   });
 
+  console.log('xxxxxxxx',  queryJoin.toString());
+
   console.log('estimated join amount out: ', queryJoin);
   const txJoinBob = await vault.joinPool(
     poolId, // pool id
@@ -441,10 +444,10 @@ async function main() {
 
   console.log('bob balance', bignumberToNumber(await erc20.balanceOf(bob.address)));
   console.log('bob balance', bignumberToNumber(await erc202.balanceOf(bob.address)));
-  console.log('bpt bob balance', bignumberToNumber(await contract.balanceOf(bob.address)));
+  console.log('bpt bob balance', bignumberToNumber(await contract.balanceOf(deployer.address)));
   tokenInfo = await vault.getPoolTokens(poolId);
 
-  console.log('pool balance', tokenInfo[1]);
+  console.log('pool balance', tokenInfo);
   console.log('bpt balance', bignumberToNumber(await contract.balanceOf(deployer.address)));
 
   console.log('erc20 balance', bignumberToNumber(await erc20.balanceOf(deployer.address)));

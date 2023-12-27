@@ -388,6 +388,8 @@ async function main() {
     { gasLimit:30000000 }
   );
   await swap.wait();
+
+  console.log("swap res",   await swap.wait())
   tokenInfo = await vault.getPoolTokens(poolId);
   console.log('pool balance after swap', tokenInfo[1]);
   console.log('after swap bpt balance', bignumberToNumber(await contract.balanceOf(deployer.address)));
