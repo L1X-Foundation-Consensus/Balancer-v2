@@ -124,7 +124,7 @@ Most of the Solidity source code is licensed under the GNU General Public Licens
 
 ```typescript
     remote: {
-      url: 'http://54.214.8.200:50051', replace the instance address
+      url: '', // replace the instance address
     },
 ```
 
