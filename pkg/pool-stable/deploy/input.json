@@ -1,10 +1,10 @@
 {
     "dumpPath": "./creationCode",
-    "owner": "0x75104938bAa47c54a86004eF998CC76C2e616289",
-    "vault": "0x1e1ec9cd126a6d4941e9dc7D3761f2279EeFb309",
+    "owner": "0x78e044394595D4984F66c1B19059Bc14ecc24063",
+    "vault": "0x263B30771017bB54d342745A69C6923011182BA7",
     "protocol": "0xb95a53d594dd219604131188bafcf05512fbc8cd",
-    "erc20": "0x21F93099BA2407e6534bF6B07802Fbe1E5A878A6",
-    "erc201": "0x8A19130BF73EA4F5C8591491C0a1e623eECeBA11",
+    "erc20": "0x732aC0d3BdA95Bba0A48F90aF05aa3FeeC71ddB3",
+    "erc201": "0x89FeAfAAb7630e97a1510Bf86D5464D6b6E42Dbc",
     "rateProvider": "0xf48738e24e86622465f7a53d3cc863febccfdc69",
     "rateProvider1": "0x3bfdb00ad0c243316f72f82ed718ea7afd76deab",
     "authorizer": "0x06210c48ed1a75e31fc9294dfe7cf04597cdd311",
@@ -13,14 +13,14 @@
         "amount": "1000000000"
     },
     "TokenListByPoolIdCall": {
-        "poolId": "0xe7f300b560442167ed5b8210a5cabdaa0db32c10000000000000000000000000"
+        "poolId": "0xfc450883848ddea5260a12e18af0d6b4a68a6f51000000000000000000000000"
     },
     "initPoolCall": {
         "tokenInfo": [
-            "0x21F93099BA2407e6534bF6B07802Fbe1E5A878A6",
-            "0x8A19130BF73EA4F5C8591491C0a1e623eECeBA11",
-            "0xAe8Bf6634E4155D4B5beFFBE36D0258Bc0f0c65d",
-            "0xe7F300B560442167ed5b8210A5cabdaA0db32C10"
+            "0x732aC0d3BdA95Bba0A48F90aF05aa3FeeC71ddB3",
+            "0x89FeAfAAb7630e97a1510Bf86D5464D6b6E42Dbc",
+            "0xEEfe672d24A50Bcf0A45A778Ff359A6097413c80",
+            "0xfc450883848DdeA5260A12E18af0d6B4A68a6f51"
         ],
         "maxAmountsIn": [
             "10000000000000000",
@@ -34,14 +34,14 @@
             "500000000",
             "500000000"
         ],
-        "address": "0x75104938bAa47c54a86004eF998CC76C2e616289"
+        "address": "0x78e044394595D4984F66c1B19059Bc14ecc24063"
     },
     "joinPoolCall": {
         "tokenInfo": [
-            "0x21F93099BA2407e6534bF6B07802Fbe1E5A878A6",
-            "0x8A19130BF73EA4F5C8591491C0a1e623eECeBA11",
-            "0xAe8Bf6634E4155D4B5beFFBE36D0258Bc0f0c65d",
-            "0xe7F300B560442167ed5b8210A5cabdaA0db32C10"
+            "0x732aC0d3BdA95Bba0A48F90aF05aa3FeeC71ddB3",
+            "0x89FeAfAAb7630e97a1510Bf86D5464D6b6E42Dbc",
+            "0xEEfe672d24A50Bcf0A45A778Ff359A6097413c80",
+            "0xfc450883848DdeA5260A12E18af0d6B4A68a6f51"
         ],
         "amountsIn": [
             "1000",
@@ -54,6 +54,6 @@
             "500000000",
             "500000000"
         ],
-        "address": "0x75104938bAa47c54a86004eF998CC76C2e616289"
+        "address": "0x78e044394595D4984F66c1B19059Bc14ecc24063"
     }
 }

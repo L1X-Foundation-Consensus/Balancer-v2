@@ -71,6 +71,8 @@ async function main() {
       }
     )
   );
+
+  console.log('status', await contract.vault.populateTransaction.getPausedState());
 }
 
 main()

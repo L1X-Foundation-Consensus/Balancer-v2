@@ -15,18 +15,18 @@ task(TASK_COMPILE).setAction(overrideQueryFunctions);
 
 export default {
   networks: {
-    localhost: {
+    remote: {
       // url: 'http://127.0.0.1:8545',
       url: 'http://54.214.8.200:50051',
       // gas: 30000000,
       // accounts: [PRIVATE_KEY, SECOND_PRIVATE_KEY],
     },
 
-    x: {
+    hardhatEnv: {
       url: 'http://127.0.0.1:8545',
     },
 
-    xx: {
+    localhost: {
       url: 'http://0.0.0.0:50051',
       // accounts: [PRIVATE_KEY, SECOND_PRIVATE_KEY],
     },
