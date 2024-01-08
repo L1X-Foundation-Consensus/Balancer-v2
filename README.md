@@ -121,7 +121,7 @@ Most of the Solidity source code is licensed under the GNU General Public Licens
 # Interaction with Balancer Pool V1 
 
 ### 1. Setup network
-
+Run yarn and yarn build
 ```typescript
     remote: {
       url: '', // replace the instance address
