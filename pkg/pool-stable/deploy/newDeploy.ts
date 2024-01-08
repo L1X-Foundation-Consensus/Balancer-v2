@@ -76,34 +76,34 @@ async function main() {
     vaultParams.bufferPeriodDuration,
     { gasLimit: 30000000 }
   );
-  await waitFiveSeconds();
+
   console.log('Contract vault deployed to:', vault.address);
 
   const balancerQueriesFactory = await ethers.getContractFactory('BalancerQueries');
   const balancerQueries = await balancerQueriesFactory.deploy(vault.address);
   console.log('Contract balancerQueries deployed to:', balancerQueries.address);
-  await waitFiveSeconds();
+
   // deploy ProtocolFeePercentagesProvider
   const ProtocolFeePercentagesProviderFactory = await ethers.getContractFactory('ProtocolFeePercentagesProvider');
   const protocolFeePercentagesProvider = await ProtocolFeePercentagesProviderFactory.deploy(vault.address, 100, 200, {
     gasLimit: 30000000,
   });
   console.log('Contract protovol fee deployed to:', protocolFeePercentagesProvider.address);
-  await waitFiveSeconds();
+
   // deploy rate provider
   const RateProviderFactory = await ethers.getContractFactory('RateProvider');
   const rateProvider = await RateProviderFactory.deploy({ gasLimit: 30000000 });
   console.log('Contract rate provider deployed to:', rateProvider.address);
-  await waitFiveSeconds();
+
   // deploy the other rate provider
   const RateProviderFactory2 = await ethers.getContractFactory('RateProvider');
   const rateProvider2 = await RateProviderFactory2.deploy({ gasLimit: 30000000 });
   console.log('Contract rate provider 2 deployed to:', rateProvider2.address);
-  await waitFiveSeconds();
+
   const RateProviderFactory3 = await ethers.getContractFactory('RateProvider');
   const rateProvider3 = await RateProviderFactory3.deploy({ gasLimit: 30000000 });
   console.log('Contract rate provider 3 deployed to:', rateProvider3.address);
-  await waitFiveSeconds();
+
   // const composableStablePoolFactory = await ethers.getContractFactory('ComposableStablePoolFactory');
   // const composableStablePoolFactoryParams = {
   //   vault: vault.address,
@@ -181,7 +181,6 @@ async function main() {
 
   const contract = await ContractFactory.deploy(poolParams, { gasLimit: 30000000 });
   console.log('pool deployed to:', contract.address);
-  await waitFiveSeconds();
   const poolId = await contract.getPoolId();
   // const poolId = contract.address + '000000000000000000000000';
   console.log('pool id', poolId);
@@ -189,40 +188,34 @@ async function main() {
   await erc20
     .connect(deployer)
     .deposit(ethers.utils.parseEther('10000000000'), bob.address, vault.address, { gasLimit: 30000000 });
-  await waitFiveSeconds();
-  console.log('1');
+
   await erc202
     .connect(deployer)
     .deposit(ethers.utils.parseEther('10000000000'), bob.address, vault.address, { gasLimit: 30000000 });
-  await waitFiveSeconds();
-  console.log('1');
+
   await erc203
     .connect(deployer)
     .deposit(ethers.utils.parseEther('10000000000'), bob.address, vault.address, { gasLimit: 30000000 });
-  await waitFiveSeconds();
-  console.log('1');
+
   await erc20
     .connect(deployer)
     .deposit(ethers.utils.parseEther('1000000000'), deployer.address, vault.address, { gasLimit: 30000000 });
-  await waitFiveSeconds();
-  console.log('1');
+
   await erc202
     .connect(deployer)
     .deposit(ethers.utils.parseEther('1000000000'), deployer.address, vault.address, { gasLimit: 30000000 });
-  await waitFiveSeconds();
-  console.log('1');
+
   await erc203
     .connect(deployer)
     .deposit(ethers.utils.parseEther('1000000000'), deployer.address, vault.address, { gasLimit: 30000000 });
-  await waitFiveSeconds();
-  console.log('1');
+
   const poolDetails = await vault.getPool(poolId);
-  await waitFiveSeconds();
+
   // await vault.setRelayerApproval(deployer.address, deployer.address, true);
 
   // console.log('token info', await vault.getPoolTokenInfo(poolId, erc20.address));
   let tokenInfo = await vault.getPoolTokens(poolId);
-  await waitFiveSeconds();
+
   // let tokenInfo = [
   //   [
   //     '0x07df10b89fa81334b29e54805d291cbcdd88cb52',
@@ -265,7 +258,7 @@ async function main() {
     { gasLimit: 30000000 }
   );
   await txJoin.wait();
-  await waitFiveSeconds();
+
   // transfer erc20 to bob
   //   await erc20.transfer(bob.address, ethers.utils.parseEther('1000000'));
   //   await erc202.transfer(bob.address, ethers.utils.parseEther('1000000'));
@@ -311,14 +304,14 @@ async function main() {
 
   const sender = ZERO_ADDRESS;
   const recipient = ZERO_ADDRESS;
-  await waitFiveSeconds();
-  // const queryJoin = await balancerQueries.queryJoin(poolId, sender, recipient, {
-  //   assets: tokenInfoBob,
-  //   maxAmountsIn: max,
-  //   fromInternalBalance: false,
-  //   userData: StablePoolEncoder.joinExactTokensInForBPTOut(amountsInBob, 0),
-  // });
-  await waitFiveSeconds();
+
+  const queryJoin = await balancerQueries.queryJoin(poolId, sender, recipient, {
+    assets: tokenInfoBob,
+    maxAmountsIn: max,
+    fromInternalBalance: false,
+    userData: StablePoolEncoder.joinExactTokensInForBPTOut(amountsInBob, 0),
+  });
+
   const actionSwap = await actionId(vault, 'swap');
   await authorizer.grantRole(actionSwap, deployer.address);
 
@@ -329,7 +322,6 @@ async function main() {
   await authorizer.grantRole(actionExit, deployer.address);
 
   // console.log('estimated join amount out: ', queryJoin);
-  await waitFiveSeconds();
 
   const txJoinBob = await vault.joinPool(
     poolId, // pool id
@@ -344,122 +336,122 @@ async function main() {
   );
   await txJoinBob.wait();
   console.log('bob balance', bignumberToNumber(await erc20.balanceOf(bob.address)));
-  // console.log('bob balance', bignumberToNumber(await erc202.balanceOf(bob.address)));
-  // console.log('bpt bob balance', bignumberToNumber(await contract.balanceOf(bob.address)));
-  // tokenInfo = await vault.getPoolTokens(poolId);
+  console.log('bob balance', bignumberToNumber(await erc202.balanceOf(bob.address)));
+  console.log('bpt bob balance', bignumberToNumber(await contract.balanceOf(bob.address)));
+  tokenInfo = await vault.getPoolTokens(poolId);
 
-  // console.log('pool balance', tokenInfo[1]);
-  // console.log('bpt balance', bignumberToNumber(await contract.balanceOf(deployer.address)));
+  console.log('pool balance', tokenInfo[1]);
+  console.log('bpt balance', bignumberToNumber(await contract.balanceOf(deployer.address)));
 
-  // console.log('erc20 balance bob', bignumberToNumber(await erc20.balanceOf(bob.address)));
-  // console.log('erc202 balance bob', bignumberToNumber(await erc202.balanceOf(bob.address)));
+  console.log('erc20 balance bob', bignumberToNumber(await erc20.balanceOf(bob.address)));
+  console.log('erc202 balance bob', bignumberToNumber(await erc202.balanceOf(bob.address)));
 
-  // console.log('erc20 balance vault', bignumberToNumber(await erc20.balanceOf(vault.address)));
-  // console.log('erc202 balance vault', bignumberToNumber(await erc202.balanceOf(vault.address)));
-  // let funds: FundManagement;
-  // funds = {
-  //   sender: vault.address,
-  //   recipient: ZERO_ADDRESS,
+  console.log('erc20 balance vault', bignumberToNumber(await erc20.balanceOf(vault.address)));
+  console.log('erc202 balance vault', bignumberToNumber(await erc202.balanceOf(vault.address)));
+  let funds: FundManagement;
+  funds = {
+    sender: vault.address,
+    recipient: ZERO_ADDRESS,
+    fromInternalBalance: false,
+    toInternalBalance: false,
+  };
+  // const swaps: BatchSwapStep[] = toSwaps(swapsData);
+  // const deltas = await vault.queryBatchSwap(SwapKind.GivenIn, swaps, tokens.addresses, funds);
+  // const sender = ZERO_ADDRESS;
+  // const recipient = ZERO_ADDRESS;
+
+  const amount = fp(10);
+  const indexIn = 0;
+  const indexOut = 1;
+
+  const querySwap = await balancerQueries.querySwap(
+    {
+      poolId: poolId,
+      kind: SwapKind.GivenIn,
+      assetIn: erc20.address,
+      assetOut: erc202.address,
+      amount,
+      userData: '0x',
+    },
+    funds
+  );
+  console.log('estimated swap amount out: ', querySwap);
+
+  const swap = await vault.swap(
+    {
+      kind: SwapKind.GivenIn,
+      poolId,
+      assetIn: erc20.address,
+      assetOut: erc202.address,
+      amount: fp(10),
+
+      userData: '0x',
+    },
+    {
+      sender: deployer.address,
+      recipient: deployer.address,
+      fromInternalBalance: false,
+      toInternalBalance: false,
+    },
+    0,
+    MAX_UINT256,
+    { gasLimit: 30000000 }
+  );
+  await swap.wait();
+
+  tokenInfo = await vault.getPoolTokens(poolId);
+  console.log('pool balance after swap', tokenInfo[1]);
+  console.log('after swap bpt balance', bignumberToNumber(await contract.balanceOf(deployer.address)));
+
+  console.log('after swap erc20 balance', bignumberToNumber(await erc20.balanceOf(deployer.address)));
+  console.log('after swap erc202 balance', bignumberToNumber(await erc202.balanceOf(deployer.address)));
+  // amountsIn = [];
+  // for (let i = 0; i < tokenInfo[0].length; i++) {
+  //   if (tokenInfo[0][i] == contract.address) {
+  //     amountsIn.push(ethers.utils.parseEther('1000'));
+  //   } else {
+  //     amountsIn.push(ethers.utils.parseEther('1000'));
+  //   }
+  // }
+  // const txJoin1 = await vault.joinPool(poolId, deployer.address, deployer.address, {
+  //   assets: [erc20.address, erc202.address],
+  //   maxAmountsIn: [ethers.utils.parseEther('10000000000000000'), ethers.utils.parseEther('10000000000000000')],
   //   fromInternalBalance: false,
-  //   toInternalBalance: false,
-  // };
-  // // const swaps: BatchSwapStep[] = toSwaps(swapsData);
-  // // const deltas = await vault.queryBatchSwap(SwapKind.GivenIn, swaps, tokens.addresses, funds);
-  // // const sender = ZERO_ADDRESS;
-  // // const recipient = ZERO_ADDRESS;
-
-  // const amount = fp(10);
-  // const indexIn = 0;
-  // const indexOut = 1;
-  // await waitFiveSeconds();
-  // const querySwap = await balancerQueries.querySwap(
-  //   {
-  //     poolId: poolId,
-  //     kind: SwapKind.GivenIn,
-  //     assetIn: erc20.address,
-  //     assetOut: erc202.address,
-  //     amount,
-  //     userData: '0x',
-  //   },
-  //   funds
-  // );
-  // console.log('estimated swap amount out: ', querySwap);
-  // await waitFiveSeconds();
-  // const swap = await vault.swap(
-  //   {
-  //     kind: SwapKind.GivenIn,
-  //     poolId,
-  //     assetIn: erc20.address,
-  //     assetOut: erc202.address,
-  //     amount: fp(10),
-
-  //     userData: '0x',
-  //   },
-  //   {
-  //     sender: deployer.address,
-  //     recipient: deployer.address,
-  //     fromInternalBalance: false,
-  //     toInternalBalance: false,
-  //   },
-  //   0,
-  //   MAX_UINT256,
-  //   { gasLimit: 30000000 }
-  // );
-  // await swap.wait();
-
-  // tokenInfo = await vault.getPoolTokens(poolId);
-  // console.log('pool balance after swap', tokenInfo[1]);
-  // console.log('after swap bpt balance', bignumberToNumber(await contract.balanceOf(deployer.address)));
-
-  // console.log('after swap erc20 balance', bignumberToNumber(await erc20.balanceOf(deployer.address)));
-  // console.log('after swap erc202 balance', bignumberToNumber(await erc202.balanceOf(deployer.address)));
-  // // amountsIn = [];
-  // // for (let i = 0; i < tokenInfo[0].length; i++) {
-  // //   if (tokenInfo[0][i] == contract.address) {
-  // //     amountsIn.push(ethers.utils.parseEther('1000'));
-  // //   } else {
-  // //     amountsIn.push(ethers.utils.parseEther('1000'));
-  // //   }
-  // // }
-  // // const txJoin1 = await vault.joinPool(poolId, deployer.address, deployer.address, {
-  // //   assets: [erc20.address, erc202.address],
-  // //   maxAmountsIn: [ethers.utils.parseEther('10000000000000000'), ethers.utils.parseEther('10000000000000000')],
-  // //   fromInternalBalance: false,
-  // //   userData: StablePoolEncoder.joinExactTokensInForBPTOut([ethers.utils.parseEther('10000'), ethers.utils.parseEther('10000')], ethers.utils.parseEther('100')),
-  // // });
-  // // console.log(await txJoin.wait);
-  // await waitFiveSeconds();
-  // const queryExit = await balancerQueries.queryExit(poolId, sender, recipient, {
-  //   assets: tokenInfo[0],
-  //   minAmountsOut: [ethers.utils.parseEther('0'), ethers.utils.parseEther('0'), ethers.utils.parseEther('0')],
-  //   userData: StablePoolEncoder.exitExactBptInForTokensOut(ethers.utils.parseEther('100000000')),
-  //   toInternalBalance: false,
+  //   userData: StablePoolEncoder.joinExactTokensInForBPTOut([ethers.utils.parseEther('10000'), ethers.utils.parseEther('10000')], ethers.utils.parseEther('100')),
   // });
-  // console.log('estimated exit amount out: ', queryExit);
-  // await waitFiveSeconds();
-  // const txExit = await vault.exitPool(
-  //   poolId,
-  //   bob.address,
-  //   bob.address,
-  //   {
-  //     assets: tokenInfo[0],
-  //     minAmountsOut: [
-  //       ethers.utils.parseEther('0'),
-  //       ethers.utils.parseEther('0'),
-  //       ethers.utils.parseEther('0'),
-  //       ethers.utils.parseEther('0'),
-  //     ],
-  //     userData: StablePoolEncoder.exitExactBptInForTokensOut(ethers.utils.parseEther('2999')),
-  //     toInternalBalance: false,
-  //   },
-  //   { gasLimit: 30000000 }
-  // );
-  // console.log(await txExit.await);
-  // tokenInfo = await vault.getPoolTokens(poolId);
-  // console.log(tokenInfo);
-  // console.log('bpt balance', bignumberToNumber(await contract.balanceOf(deployer.address)));
-  // console.log('erc20 balance', bignumberToNumber(await erc20.balanceOf(deployer.address)));
-  // console.log('erc202 balance', bignumberToNumber(await erc202.balanceOf(deployer.address)));
+  // console.log(await txJoin.wait);
+
+  const queryExit = await balancerQueries.queryExit(poolId, sender, recipient, {
+    assets: tokenInfo[0],
+    minAmountsOut: [ethers.utils.parseEther('0'), ethers.utils.parseEther('0'), ethers.utils.parseEther('0')],
+    userData: StablePoolEncoder.exitExactBptInForTokensOut(ethers.utils.parseEther('100000000')),
+    toInternalBalance: false,
+  });
+  console.log('estimated exit amount out: ', queryExit);
+
+  const txExit = await vault.exitPool(
+    poolId,
+    bob.address,
+    bob.address,
+    {
+      assets: tokenInfo[0],
+      minAmountsOut: [
+        ethers.utils.parseEther('0'),
+        ethers.utils.parseEther('0'),
+        ethers.utils.parseEther('0'),
+        ethers.utils.parseEther('0'),
+      ],
+      userData: StablePoolEncoder.exitExactBptInForTokensOut(ethers.utils.parseEther('2999')),
+      toInternalBalance: false,
+    },
+    { gasLimit: 30000000 }
+  );
+  console.log(await txExit.await);
+  tokenInfo = await vault.getPoolTokens(poolId);
+  console.log(tokenInfo);
+  console.log('bpt balance', bignumberToNumber(await contract.balanceOf(deployer.address)));
+  console.log('erc20 balance', bignumberToNumber(await erc20.balanceOf(deployer.address)));
+  console.log('erc202 balance', bignumberToNumber(await erc202.balanceOf(deployer.address)));
 }
 
 main()
@@ -533,6 +525,6 @@ function waitFiveSeconds() {
   return new Promise<void>((resolve) => {
     setTimeout(() => {
       resolve();
-    }, 10000);
+    }, 1);
   });
 }
