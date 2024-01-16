@@ -305,12 +305,12 @@ async function main() {
   const sender = ZERO_ADDRESS;
   const recipient = ZERO_ADDRESS;
 
-  const queryJoin = await balancerQueries.queryJoin(poolId, sender, recipient, {
-    assets: tokenInfoBob,
-    maxAmountsIn: max,
-    fromInternalBalance: false,
-    userData: StablePoolEncoder.joinExactTokensInForBPTOut(amountsInBob, 0),
-  });
+  // const queryJoin = await balancerQueries.queryJoin(poolId, sender, recipient, {
+  //   assets: tokenInfoBob,
+  //   maxAmountsIn: max,
+  //   fromInternalBalance: false,
+  //   userData: StablePoolEncoder.joinExactTokensInForBPTOut(amountsInBob, 0),
+  // });
 
   const actionSwap = await actionId(vault, 'swap');
   await authorizer.grantRole(actionSwap, deployer.address);
@@ -364,18 +364,18 @@ async function main() {
   const indexIn = 0;
   const indexOut = 1;
 
-  const querySwap = await balancerQueries.querySwap(
-    {
-      poolId: poolId,
-      kind: SwapKind.GivenIn,
-      assetIn: erc20.address,
-      assetOut: erc202.address,
-      amount,
-      userData: '0x',
-    },
-    funds
-  );
-  console.log('estimated swap amount out: ', querySwap);
+  // const querySwap = await balancerQueries.querySwap(
+  //   {
+  //     poolId: poolId,
+  //     kind: SwapKind.GivenIn,
+  //     assetIn: erc20.address,
+  //     assetOut: erc202.address,
+  //     amount,
+  //     userData: '0x',
+  //   },
+  //   funds
+  // );
+  // console.log('estimated swap amount out: ', querySwap);
 
   const swap = await vault.swap(
     {
@@ -421,13 +421,13 @@ async function main() {
   // });
   // console.log(await txJoin.wait);
 
-  const queryExit = await balancerQueries.queryExit(poolId, sender, recipient, {
-    assets: tokenInfo[0],
-    minAmountsOut: [ethers.utils.parseEther('0'), ethers.utils.parseEther('0'), ethers.utils.parseEther('0')],
-    userData: StablePoolEncoder.exitExactBptInForTokensOut(ethers.utils.parseEther('100000000')),
-    toInternalBalance: false,
-  });
-  console.log('estimated exit amount out: ', queryExit);
+  // const queryExit = await balancerQueries.queryExit(poolId, sender, recipient, {
+  //   assets: tokenInfo[0],
+  //   minAmountsOut: [ethers.utils.parseEther('0'), ethers.utils.parseEther('0'), ethers.utils.parseEther('0')],
+  //   userData: StablePoolEncoder.exitExactBptInForTokensOut(ethers.utils.parseEther('100000000')),
+  //   toInternalBalance: false,
+  // });
+  // console.log('estimated exit amount out: ', queryExit);
 
   const txExit = await vault.exitPool(
     poolId,

@@ -413,19 +413,17 @@ async function main() {
   const sender = ZERO_ADDRESS;
   const recipient = ZERO_ADDRESS;
 
-  const queryJoin = await balancerQueries.queryJoin(poolId, sender, recipient, {
-    assets: tokenInfoBob,
-    maxAmountsIn: [MAX_UINT256, MAX_UINT256, MAX_UINT256, MAX_UINT256],
-    fromInternalBalance: false,
-    userData: StablePoolEncoder.joinExactTokensInForBPTOut(
-      [0, ethers.utils.parseUnits('1000', 18), ethers.utils.parseUnits('1000', 18)],
-      0
-    ),
-  });
+  // const queryJoin = await balancerQueries.queryJoin(poolId, sender, recipient, {
+  //   assets: tokenInfoBob,
+  //   maxAmountsIn: [MAX_UINT256, MAX_UINT256, MAX_UINT256, MAX_UINT256],
+  //   fromInternalBalance: false,
+  //   userData: StablePoolEncoder.joinExactTokensInForBPTOut(
+  //     [0, ethers.utils.parseUnits('1000', 18), ethers.utils.parseUnits('1000', 18)],
+  //     0
+  //   ),
+  // });
 
-  console.log('xxxxxxxx',  queryJoin.toString());
-
-  console.log('estimated join amount out: ', queryJoin);
+  // console.log('estimated join amount out: ', queryJoin);
   const txJoinBob = await vault.joinPool(
     poolId, // pool id
     deployer.address,

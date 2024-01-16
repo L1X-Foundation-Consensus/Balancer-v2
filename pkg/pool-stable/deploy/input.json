@@ -1,7 +1,7 @@
 {
     "dumpPath": "./creationCode",
     "owner": "0x78e044394595D4984F66c1B19059Bc14ecc24063",
-    "vault": "0x263B30771017bB54d342745A69C6923011182BA7",
+    "vault": "0x6E474e76ACFAA69a3A9b3F21fF48cFDd888834dD",
     "protocol": "0xb95a53d594dd219604131188bafcf05512fbc8cd",
     "erc20": "0x732aC0d3BdA95Bba0A48F90aF05aa3FeeC71ddB3",
     "erc201": "0x89FeAfAAb7630e97a1510Bf86D5464D6b6E42Dbc",
@@ -13,14 +13,14 @@
         "amount": "1000000000"
     },
     "TokenListByPoolIdCall": {
-        "poolId": "0xfc450883848ddea5260a12e18af0d6b4a68a6f51000000000000000000000000"
+        "poolId": "0x36e570a02ecf00481e35d8ff773b2a4e0fda6904000000000000000000000000"
     },
     "initPoolCall": {
         "tokenInfo": [
-            "0x732aC0d3BdA95Bba0A48F90aF05aa3FeeC71ddB3",
-            "0x89FeAfAAb7630e97a1510Bf86D5464D6b6E42Dbc",
-            "0xEEfe672d24A50Bcf0A45A778Ff359A6097413c80",
-            "0xfc450883848DdeA5260A12E18af0d6B4A68a6f51"
+            "0x2176f3Be13e5A82b0ea2599AFDe1b69Fd563fAF1",
+            "0x36E570A02ECF00481e35D8fF773b2A4e0fda6904",
+            "0xd1304ba1EBd330FA8869913eF0b265B0a542686D",
+            "0xe7475F4217e49A54185B9127C5b9eB058AE32BB9"
         ],
         "maxAmountsIn": [
             "10000000000000000",
@@ -38,10 +38,10 @@
     },
     "joinPoolCall": {
         "tokenInfo": [
-            "0x732aC0d3BdA95Bba0A48F90aF05aa3FeeC71ddB3",
-            "0x89FeAfAAb7630e97a1510Bf86D5464D6b6E42Dbc",
-            "0xEEfe672d24A50Bcf0A45A778Ff359A6097413c80",
-            "0xfc450883848DdeA5260A12E18af0d6B4A68a6f51"
+            "0x2176f3Be13e5A82b0ea2599AFDe1b69Fd563fAF1",
+            "0x36E570A02ECF00481e35D8fF773b2A4e0fda6904",
+            "0xd1304ba1EBd330FA8869913eF0b265B0a542686D",
+            "0xe7475F4217e49A54185B9127C5b9eB058AE32BB9"
         ],
         "amountsIn": [
             "1000",
