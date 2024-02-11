@@ -17,7 +17,7 @@ export default {
   networks: {
     remote: {
       url: 'http://13.215.240.95:50051',
-      accounts: [PRIVATE_KEY, SECOND_PRIVATE_KEY],
+      // accounts: [PRIVATE_KEY, SECOND_PRIVATE_KEY],
     },
 
     hardhatEnv: {

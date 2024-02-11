@@ -1,0 +1,14 @@
+
+
+ETHUSDC: 
+BSCUSDC: 0x8A19130BF73EA4F5C8591491C0a1e623eECeBA11
+WL1X : 0x0936eF494971FE035300d4af6e6b38EC1FC4c934 
+WETH : 
+
+L1X-BSCUSDC deployed to: 
+L1X-BSCUSDC poolId: 
+
+
+npx hardhat run deploy/v2/bscUSDCDeploy.ts --network v2_testnet
+npx hardhat run deploy/v2/l1xDeploy.ts --network v2_testnet
+npx hardhat run deploy/v2/poolDeploy.ts --network v2_testnet
