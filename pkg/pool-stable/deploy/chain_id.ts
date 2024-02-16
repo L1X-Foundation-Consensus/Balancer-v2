@@ -9,6 +9,7 @@ async function main() {
   console.log("The Chain ID is:", network.chainId);
 }
 
+
 main()
   .then(() => process.exit(0))
   .catch((error) => {
