@@ -17,7 +17,9 @@ export default {
   networks: {
     remote: {
       // url: 'http://127.0.0.1:8545',
-      url: 'http://54.214.8.200:50051',
+      // url: 'http://54.214.8.200:50051',
+      //url: 'https://v2-mainnet-rpc.l1x.foundation',
+      url: 'http://54.251.122.134:50051',
       // gas: 30000000,
       // accounts: [PRIVATE_KEY, SECOND_PRIVATE_KEY],
     },
