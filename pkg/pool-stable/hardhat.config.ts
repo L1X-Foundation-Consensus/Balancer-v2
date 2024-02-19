@@ -16,8 +16,8 @@ task(TASK_COMPILE).setAction(overrideQueryFunctions);
 export default {
   networks: {
     remote: {
-      url: 'http://13.215.240.95:50051',
-      accounts: [PRIVATE_KEY, SECOND_PRIVATE_KEY],
+      url: 'http://54.251.122.134:50051',
+      // accounts: [PRIVATE_KEY, SECOND_PRIVATE_KEY],
     },
 
     hardhatEnv: {
@@ -25,11 +25,10 @@ export default {
     },
 
     localhost: {
-      url: 'http://0.0.0.0:50051',
+      url: 'http://127.0.0.1:50051',
     },
 
     hardhat: {
-      // blockGasLimit: 100000000429720, // whatever you want here
       allowUnlimitedContractSize: true,
     },
   },
@@ -44,7 +43,7 @@ export default {
     //     runs: 1,
     //   },
     // },
-    evmVersion: 'shanghai',
+    evmVersion: 'byzantium',
   },
   warnings: hardhatBaseConfig.warnings,
 };
