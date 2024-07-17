@@ -16,7 +16,7 @@ task(TASK_COMPILE).setAction(overrideQueryFunctions);
 export default {
   networks: {
     remote: {
-      url: 'http://18.202.254.225:50051',
+      url: 'http://15.188.124.96:50051',
       accounts: [PRIVATE_KEY, SECOND_PRIVATE_KEY],
     },
 
