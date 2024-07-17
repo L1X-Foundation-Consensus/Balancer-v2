@@ -13,13 +13,16 @@ async function main() {
   const bob = signers[1];
   console.log('Deploying contracts with the account:', deployer.address);
   const erc20Factory = await ethers.getContractFactory('OldWrappedToken');
-  
+  const currentNonce = await deployer.getTransactionCount();
+  console.log('current nonce',currentNonce);
   const ethUsdcParam = {
     _name: 'eth-USDC',
     _symbol: 'eth-USDC',
     _decimals: 18,
   };
-  const ethUsdcContract = await erc20Factory.deploy(ethUsdcParam._name, ethUsdcParam._symbol, ethUsdcParam._decimals);
+  const ethUsdcContract = await erc20Factory.deploy(ethUsdcParam._name, ethUsdcParam._symbol, ethUsdcParam._decimals, {
+    nonce: 60301
+  });
 
   console.log('Contract eth-USDC deployed to:', ethUsdcContract.address);
 
