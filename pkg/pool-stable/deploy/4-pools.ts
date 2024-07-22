@@ -12,6 +12,8 @@ async function main() {
   const signers = await ethers.getSigners();
   const deployer = signers[0];
   const bob = signers[1];
+  let nonce = 60537;
+
   console.log('Deploying contracts with the account:', deployer.address);
   const erc20Factory = await ethers.getContractFactory('OldWrappedToken');
   
@@ -20,8 +22,9 @@ async function main() {
     _symbol: 'eth-USDC',
     _decimals: 18,
   };
-  const ethUsdcContract = await erc20Factory.deploy(ethUsdcParam._name, ethUsdcParam._symbol, ethUsdcParam._decimals);
-
+  const ethUsdcContract = await erc20Factory.deploy(ethUsdcParam._name, ethUsdcParam._symbol, ethUsdcParam._decimals, { nonce });
+  await ethUsdcContract.deployed();
+  nonce++;
   console.log('Contract eth-USDC deployed to:', ethUsdcContract.address);
 
   const ethUsdtParam = {
@@ -29,8 +32,9 @@ async function main() {
     _symbol: 'eth-USDT',
     _decimals: 18,
   };
-  const ethUsdtContract = await erc20Factory.deploy(ethUsdtParam._name, ethUsdtParam._symbol, ethUsdtParam._decimals);
-
+  const ethUsdtContract = await erc20Factory.deploy(ethUsdtParam._name, ethUsdtParam._symbol, ethUsdtParam._decimals, { nonce });
+  await ethUsdtContract.deployed();
+  nonce++;
   console.log('Contract eth-USDT deployed to:', ethUsdtContract.address);
 
   const ethL1xParam = {
@@ -38,8 +42,9 @@ async function main() {
     _symbol: 'eth-L1X',
     _decimals: 18,
   };
-  const ethl1xContract = await erc20Factory.deploy(ethL1xParam._name, ethL1xParam._symbol, ethL1xParam._decimals);
-
+  const ethl1xContract = await erc20Factory.deploy(ethL1xParam._name, ethL1xParam._symbol, ethL1xParam._decimals, { nonce });
+  await ethl1xContract.deployed();
+  nonce++;
   console.log('Contract eth-L1X deployed to:', ethl1xContract.address);
 
   const bscUsdcParam = {
@@ -47,8 +52,9 @@ async function main() {
     _symbol: 'bsc-USDC',
     _decimals: 18,
   };
-  const bscUsdcContract = await erc20Factory.deploy(bscUsdcParam._name, bscUsdcParam._symbol, bscUsdcParam._decimals);
-
+  const bscUsdcContract = await erc20Factory.deploy(bscUsdcParam._name, bscUsdcParam._symbol, bscUsdcParam._decimals, { nonce });
+  await bscUsdcContract.deployed();
+  nonce++;
   console.log('Contract bsc-USDC deployed to:', bscUsdcContract.address);
 
   const bscUsdtParam = {
@@ -56,8 +62,9 @@ async function main() {
     _symbol: 'bsc-USDT',
     _decimals: 18,
   };
-  const bscUsdtContract = await erc20Factory.deploy(bscUsdtParam._name, bscUsdtParam._symbol, bscUsdtParam._decimals);
-
+  const bscUsdtContract = await erc20Factory.deploy(bscUsdtParam._name, bscUsdtParam._symbol, bscUsdtParam._decimals, { nonce });
+  await bscUsdtContract.deployed();
+  nonce++;
   console.log('Contract bsc-USDT deployed to:', bscUsdtContract.address);
 
   const bscL1xParam = {
@@ -65,21 +72,22 @@ async function main() {
     _symbol: 'bsc-L1X',
     _decimals: 18,
   };
-  const bscl1xContract = await erc20Factory.deploy(bscL1xParam._name, bscL1xParam._symbol, bscL1xParam._decimals);
-
+  const bscl1xContract = await erc20Factory.deploy(bscL1xParam._name, bscL1xParam._symbol, bscL1xParam._decimals, { nonce });
+  await bscl1xContract.deployed();
+  nonce++;
   console.log('Contract bsc-L1X deployed to:', bscl1xContract.address);
   
   const wethFactory = await ethers.getContractFactory('WETH');
-  const weth = await wethFactory.deploy();
+  const weth = await wethFactory.deploy({ nonce });
+  await weth.deployed();
+  nonce++;
   console.log('Contract weth deployed to:', weth.address);
-  // write weth creation code to file
 
   const AuthorizerFactory = await ethers.getContractFactory('Authorizer');
-  // 100 to soldity bytes32
-
-  const authorizer = await AuthorizerFactory.deploy(deployer.address);
+  const authorizer = await AuthorizerFactory.deploy(deployer.address, { nonce });
+  await authorizer.deployed();
+  nonce++;
   console.log('Contract authorizer deployed to:', authorizer.address);
-  // write weth creation code to file
 
   const VaultFactory = await ethers.getContractFactory('Vault');
   const vaultParams = {
@@ -94,56 +102,77 @@ async function main() {
     vaultParams.weth,
     vaultParams.pauseWindowDuration,
     vaultParams.bufferPeriodDuration,
+    { nonce }
   );
+  await vault.deployed();
+  nonce++;
   await waitFiveSeconds();
   console.log('Contract vault deployed to:', vault.address);
 
   const balancerQueriesFactory = await ethers.getContractFactory('BalancerQueries');
-  const balancerQueries = await balancerQueriesFactory.deploy(vault.address);
+  const balancerQueries = await balancerQueriesFactory.deploy(vault.address, { nonce });
+  await balancerQueries.deployed();
+  nonce++;
   console.log('Contract balancerQueries deployed to:', balancerQueries.address);
   await waitFiveSeconds();
-  // deploy ProtocolFeePercentagesProvider
+
   const ProtocolFeePercentagesProviderFactory = await ethers.getContractFactory('ProtocolFeePercentagesProvider');
-  const protocolFeePercentagesProvider = await ProtocolFeePercentagesProviderFactory.deploy(vault.address, 100, 200);
-  console.log('Contract protovol fee deployed to:', protocolFeePercentagesProvider.address);
+  const protocolFeePercentagesProvider = await ProtocolFeePercentagesProviderFactory.deploy(vault.address, 100, 200, { nonce });
+  await protocolFeePercentagesProvider.deployed();
+  nonce++;
+  console.log('Contract protocol fee deployed to:', protocolFeePercentagesProvider.address);
   await waitFiveSeconds();
 
   const ethUsdcRateProviderFactory = await ethers.getContractFactory('RateProvider');
-  const ethUsdcRateProvider = await ethUsdcRateProviderFactory.deploy();
+  const ethUsdcRateProvider = await ethUsdcRateProviderFactory.deploy({ nonce });
+  await ethUsdcRateProvider.deployed();
+  nonce++;
   console.log('eth-usdc rate provider deployed to:', ethUsdcRateProvider.address);
   await waitFiveSeconds();
 
   const ethUsdtRateProviderFactory = await ethers.getContractFactory('RateProvider');
-  const ethUsdtRateProvider = await ethUsdtRateProviderFactory.deploy();
+  const ethUsdtRateProvider = await ethUsdtRateProviderFactory.deploy({ nonce });
+  await ethUsdtRateProvider.deployed();
+  nonce++;
   console.log('eth-usdt rate provider deployed to:', ethUsdtRateProvider.address);
   await waitFiveSeconds();
 
   const ethL1xRateProviderFactory = await ethers.getContractFactory('RateProvider');
-  const ethL1xRateProvider = await ethL1xRateProviderFactory.deploy();
+  const ethL1xRateProvider = await ethL1xRateProviderFactory.deploy({ nonce });
+  await ethL1xRateProvider.deployed();
+  nonce++;
   console.log('eth-l1x rate provider deployed to:', ethL1xRateProvider.address);
   await waitFiveSeconds();
-  await ethL1xRateProvider.updateRate(ethers.utils.parseEther('.5'))
+  await ethL1xRateProvider.updateRate(ethers.utils.parseEther('.5'), { nonce });
+  nonce++;
   await waitFiveSeconds();
 
   const bscUsdcRateProviderFactory = await ethers.getContractFactory('RateProvider');
-  const bscUsdcRateProvider = await bscUsdcRateProviderFactory.deploy();
+  const bscUsdcRateProvider = await bscUsdcRateProviderFactory.deploy({ nonce });
+  await bscUsdcRateProvider.deployed();
+  nonce++;
   console.log('bsc-usdc rate provider deployed to:', bscUsdcRateProvider.address);
   await waitFiveSeconds();
 
   const bscUsdtRateProviderFactory = await ethers.getContractFactory('RateProvider');
-  const bscUsdtRateProvider = await bscUsdtRateProviderFactory.deploy();
+  const bscUsdtRateProvider = await bscUsdtRateProviderFactory.deploy({ nonce });
+  await bscUsdtRateProvider.deployed();
+  nonce++;
   console.log('bsc-usdt rate provider deployed to:', bscUsdtRateProvider.address);
   await waitFiveSeconds();
 
   const bscL1xRateProviderFactory = await ethers.getContractFactory('RateProvider');
-  const bscL1xRateProvider = await bscL1xRateProviderFactory.deploy();
+  const bscL1xRateProvider = await bscL1xRateProviderFactory.deploy({ nonce });
+  await bscL1xRateProvider.deployed();
+  nonce++;
   console.log('bsc-l1x rate provider deployed to:', bscL1xRateProvider.address);
   await waitFiveSeconds();
-  await bscL1xRateProvider.updateRate(ethers.utils.parseEther('.5'))
+  await bscL1xRateProvider.updateRate(ethers.utils.parseEther('.5'), { nonce });
+  nonce++;
   await waitFiveSeconds();
   
-  console.log([ethUsdcContract.address, ethUsdtContract.address,ethl1xContract.address, bscUsdcContract.address,bscUsdtContract.address,bscl1xContract.address].sort());
-  console.log([ethUsdcRateProvider.address, ethUsdtRateProvider.address, ethL1xRateProvider.address, bscUsdcRateProvider.address,bscUsdtRateProvider.address,bscL1xRateProvider.address].sort());
+  console.log([ethUsdcContract.address, ethUsdtContract.address, ethl1xContract.address, bscUsdcContract.address, bscUsdtContract.address, bscl1xContract.address].sort());
+  console.log([ethUsdcRateProvider.address, ethUsdtRateProvider.address, ethL1xRateProvider.address, bscUsdcRateProvider.address, bscUsdtRateProvider.address, bscL1xRateProvider.address].sort());
 
   const ContractFactory = await ethers.getContractFactory('ComposableStablePool');
 
@@ -164,7 +193,9 @@ async function main() {
     version: '1.0.0',
   };
 
-  const ethUSDCPoolContract = await ContractFactory.deploy(ethUsdcPoolParams, );
+  const ethUSDCPoolContract = await ContractFactory.deploy(ethUsdcPoolParams, { nonce });
+  await ethUSDCPoolContract.deployed();
+  nonce++;
   console.log('L1X/ETHUSDC pool deployed to:', ethUSDCPoolContract.address);
   await waitFiveSeconds();
   const ethUSDCPoolId = await ethUSDCPoolContract.getPoolId();
@@ -187,7 +218,9 @@ async function main() {
     version: '1.0.0',
   };
 
-  const ethUSDTPoolContract = await ContractFactory.deploy(ethUsdtPoolParams, );
+  const ethUSDTPoolContract = await ContractFactory.deploy(ethUsdtPoolParams, { nonce });
+  await ethUSDTPoolContract.deployed();
+  nonce++;
   console.log('L1X/ETHUSDT pool deployed to:', ethUSDTPoolContract.address);
   await waitFiveSeconds();
   const ethUSDTPoolId = await ethUSDTPoolContract.getPoolId();
@@ -210,7 +243,9 @@ async function main() {
     version: '1.0.0',
   };
 
-  const bscUSDCPoolContract = await ContractFactory.deploy(bscUSDCPoolParams, );
+  const bscUSDCPoolContract = await ContractFactory.deploy(bscUSDCPoolParams, { nonce });
+  await bscUSDCPoolContract.deployed();
+  nonce++;
   console.log('L1X/BSCUSDC pool deployed to:', bscUSDCPoolContract.address);
   await waitFiveSeconds();
   const bscUSDCPoolId = await bscUSDCPoolContract.getPoolId();
@@ -233,7 +268,9 @@ async function main() {
     version: '1.0.0',
   };
 
-  const bscUSDTPoolContract = await ContractFactory.deploy(bscUSDTPoolParams, );
+  const bscUSDTPoolContract = await ContractFactory.deploy(bscUSDTPoolParams, { nonce });
+  await bscUSDTPoolContract.deployed();
+  nonce++;
   console.log('L1X/BSCUSDT pool deployed to:', bscUSDTPoolContract.address);
   await waitFiveSeconds();
   const bscUSDTPoolId = await bscUSDTPoolContract.getPoolId();
@@ -241,37 +278,43 @@ async function main() {
 
   await ethUsdcContract
     .connect(deployer)
-    .deposit(ethers.utils.parseEther('1000000000'), deployer.address, vault.address, );
+    .deposit(ethers.utils.parseEther('1000000000'), deployer.address, vault.address, { nonce });
+  nonce++;
   await waitFiveSeconds();
   console.log('1');
 
   await ethUsdtContract
     .connect(deployer)
-    .deposit(ethers.utils.parseEther('1000000000'), deployer.address, vault.address, );
+    .deposit(ethers.utils.parseEther('1000000000'), deployer.address, vault.address, { nonce });
+  nonce++;
   await waitFiveSeconds();
   console.log('1');
 
   await ethl1xContract
     .connect(deployer)
-    .deposit(ethers.utils.parseEther('2000000000'), deployer.address, vault.address, );
+    .deposit(ethers.utils.parseEther('2000000000'), deployer.address, vault.address, { nonce });
+  nonce++;
   await waitFiveSeconds();
   console.log('1');
 
   await bscUsdcContract
     .connect(deployer)
-    .deposit(ethers.utils.parseEther('1000000000'), deployer.address, vault.address, );
+    .deposit(ethers.utils.parseEther('1000000000'), deployer.address, vault.address, { nonce });
+  nonce++;
   await waitFiveSeconds();
   console.log('1');
 
   await bscUsdtContract
     .connect(deployer)
-    .deposit(ethers.utils.parseEther('1000000000'), deployer.address, vault.address, );
+    .deposit(ethers.utils.parseEther('1000000000'), deployer.address, vault.address, { nonce });
+  nonce++;
   await waitFiveSeconds();
   console.log('1');
 
   await bscl1xContract
-  .connect(deployer)
-  .deposit(ethers.utils.parseEther('2000000000'), deployer.address, vault.address, );
+    .connect(deployer)
+    .deposit(ethers.utils.parseEther('2000000000'), deployer.address, vault.address, { nonce });
+  nonce++;
   await waitFiveSeconds();
   console.log('1');
 
@@ -303,7 +346,6 @@ async function main() {
   console.log('eth-usdt bpt balance before init the pool', bignumberToNumber(await ethUSDTPoolContract.balanceOf(deployer.address)));
   console.log('bsc-usdc bpt deployer balance before pool initiation', bignumberToNumber(await bscUSDCPoolContract.balanceOf(deployer.address)));
   console.log('bsc-usdt bpt deployer balance before pool initiation', bignumberToNumber(await bscUSDTPoolContract.balanceOf(deployer.address)));
-  
 
   let ethUsdcAmountsIn = [];
   for (let i = 0; i < ethUSDCTokenInfo[0].length; i++) {
@@ -332,10 +374,11 @@ async function main() {
       fromInternalBalance: false,
       userData: StablePoolEncoder.joinInit(ethUsdcAmountsIn),
     },
-    
+    { nonce }
   );
   await ethUSDCTxJoin.wait();
-  console.log('join pool info', ethUSDCTxJoin)
+  nonce++;
+  console.log('join pool info', ethUSDCTxJoin);
   await waitFiveSeconds();
 
   let ethUsdtAmountsIn = [];
@@ -363,9 +406,10 @@ async function main() {
       fromInternalBalance: false,
       userData: StablePoolEncoder.joinInit(ethUsdtAmountsIn),
     },
-    
+    { nonce }
   );
   await ethUSDTTxJoin.wait();
+  nonce++;
   await waitFiveSeconds();
 
   let bscUsdcAmountsIn = [];
@@ -393,9 +437,10 @@ async function main() {
       fromInternalBalance: false,
       userData: StablePoolEncoder.joinInit(bscUsdcAmountsIn),
     },
-    
+    { nonce }
   );
   await bscUSDCTxJoin.wait();
+  nonce++;
   await waitFiveSeconds();
 
   let bscUsdtAmountsIn = [];
@@ -423,15 +468,16 @@ async function main() {
       fromInternalBalance: false,
       userData: StablePoolEncoder.joinInit(bscUsdtAmountsIn),
     },
-    
+    { nonce }
   );
   await bscUSDTTxJoin.wait();
+  nonce++;
   await waitFiveSeconds();
 
   console.log('eth-usdc bpt deployer balance after init the pool', bignumberToNumber(await ethUSDCPoolContract.balanceOf(deployer.address)));
   console.log('eth-usdt bpt deployer balance after init the pool', bignumberToNumber(await ethUSDTPoolContract.balanceOf(deployer.address)));
-  console.log('bsc-usdc bpt deployer balance after pool initiation', bignumberToNumber(await bscUSDTPoolContract.balanceOf(deployer.address)));
-  console.log('bsc-usdt bpt deployer balance after pool initiation', bignumberToNumber(await bscUSDCPoolContract.balanceOf(deployer.address)));
+  console.log('bsc-usdc bpt deployer balance after pool initiation', bignumberToNumber(await bscUSDCPoolContract.balanceOf(deployer.address)));
+  console.log('bsc-usdt bpt deployer balance after pool initiation', bignumberToNumber(await bscUSDTPoolContract.balanceOf(deployer.address)));
 
   await waitFiveSeconds();
 
@@ -459,11 +505,13 @@ async function main() {
       maxAmountsIn: ethUSDCMax,
       fromInternalBalance: false,
       userData: StablePoolEncoder.joinExactTokensInForBPTOut(ethUSDCAmountsInBob, 0),
-    }
+    },
+    { nonce }
   );
   await ethUSDCTxJoinBob.wait();
+  nonce++;
   await waitFiveSeconds();
-  console.log('eth-usdc join pool bob',ethUSDCTxJoinBob);
+  console.log('eth-usdc join pool bob', ethUSDCTxJoinBob);
 
   let ethUSDTMax = [];
   let ethUSDTAmountsInBob = [];
@@ -489,11 +537,13 @@ async function main() {
       maxAmountsIn: ethUSDTMax,
       fromInternalBalance: false,
       userData: StablePoolEncoder.joinExactTokensInForBPTOut(ethUSDTAmountsInBob, 0),
-    }
+    },
+    { nonce }
   );
   await ethUSDTTxJoinBob.wait();
+  nonce++;
   await waitFiveSeconds();
-  console.log('eth-usdt join pool bob',ethUSDTTxJoinBob);
+  console.log('eth-usdt join pool bob', ethUSDTTxJoinBob);
 
   let bscUSDCMax = [];
   let bscUSDCAmountsInBob = [];
@@ -519,10 +569,12 @@ async function main() {
       maxAmountsIn: bscUSDCMax,
       fromInternalBalance: false,
       userData: StablePoolEncoder.joinExactTokensInForBPTOut(bscUSDCAmountsInBob, 0),
-    }
+    },
+    { nonce }
   );
   await bscUSDCTxJoinBob.wait();
-  console.log('bsc-usdc join pool bob',bscUSDCTxJoinBob);
+  nonce++;
+  console.log('bsc-usdc join pool bob', bscUSDCTxJoinBob);
   await waitFiveSeconds();
 
   let bscUSDTMax = [];
@@ -549,10 +601,12 @@ async function main() {
       maxAmountsIn: bscUSDTMax,
       fromInternalBalance: false,
       userData: StablePoolEncoder.joinExactTokensInForBPTOut(bscUSDTAmountsInBob, 0),
-    }
+    },
+    { nonce }
   );
   await bscUSDTTxJoinBob.wait();
-  console.log('bsc-usdt join pool bob',bscUSDTTxJoinBob);
+  nonce++;
+  console.log('bsc-usdt join pool bob', bscUSDTTxJoinBob);
   await waitFiveSeconds();
 
   console.log('eth-usdc bpt bob balance after bob joining the pool', bignumberToNumber(await ethUSDCPoolContract.balanceOf(bob.address)));
@@ -561,13 +615,16 @@ async function main() {
   console.log('bsc-usdt bpt bob balance after bob joining the pool', bignumberToNumber(await bscUSDTPoolContract.balanceOf(bob.address)));
 
   const actionSwap = await actionId(vault, 'swap');
-  await authorizer.grantRole(actionSwap, '0xffa375cdd34a73fc01e450ecfb22f64e69b92c09');
+  await authorizer.grantRole(actionSwap, '0xffa375cdd34a73fc01e450ecfb22f64e69b92c09', { nonce });
+  nonce++;
 
   const actionJoin = await actionId(vault, 'joinPool');
-  await authorizer.grantRole(actionJoin, '460ac291425bdf2bfab1c5864c2ce6f3debcd725');
+  await authorizer.grantRole(actionJoin, '460ac291425bdf2bfab1c5864c2ce6f3debcd725', { nonce });
+  nonce++;
 
   const actionExit = await actionId(vault, 'exitPool');
-  await authorizer.grantRole(actionExit, '0x6ec4adc9a2459639b60787b744b9d46623d2ebd5');
+  await authorizer.grantRole(actionExit, '0x6ec4adc9a2459639b60787b744b9d46623d2ebd5', { nonce });
+  nonce++;
 }
 
 main()

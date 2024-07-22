@@ -9,9 +9,8 @@ async function main() {
   const bob = signers[1];
   console.log('Deploying contracts with the account:', deployer.address);
   const erc20Factory = await ethers.getContractFactory('ERC20');
-  let currentNonce = await deployer.getTransactionCount() - 3100;
+  let currentNonce = 60466;
   console.log('current nonce',currentNonce);
-
 //   console.log('deploying ETHEREUM WRAPPED TOKENS')
 //   const L1XETHParam = {
 //     _name: 'L1XETH',
