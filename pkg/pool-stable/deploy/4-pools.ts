@@ -241,37 +241,37 @@ async function main() {
 
   await ethUsdcContract
     .connect(deployer)
-    .deposit(ethers.utils.parseEther('1000000000'), deployer.address, vault.address, );
+    .deposit(ethers.utils.parseEther('100'), deployer.address, vault.address, );
   await waitFiveSeconds();
   console.log('1');
 
   await ethUsdtContract
     .connect(deployer)
-    .deposit(ethers.utils.parseEther('1000000000'), deployer.address, vault.address, );
+    .deposit(ethers.utils.parseEther('100'), deployer.address, vault.address, );
   await waitFiveSeconds();
   console.log('1');
 
   await ethl1xContract
     .connect(deployer)
-    .deposit(ethers.utils.parseEther('2000000000'), deployer.address, vault.address, );
+    .deposit(ethers.utils.parseEther('200'), deployer.address, vault.address, );
   await waitFiveSeconds();
   console.log('1');
 
   await bscUsdcContract
     .connect(deployer)
-    .deposit(ethers.utils.parseEther('1000000000'), deployer.address, vault.address, );
+    .deposit(ethers.utils.parseEther('100'), deployer.address, vault.address, );
   await waitFiveSeconds();
   console.log('1');
 
   await bscUsdtContract
     .connect(deployer)
-    .deposit(ethers.utils.parseEther('1000000000'), deployer.address, vault.address, );
+    .deposit(ethers.utils.parseEther('100'), deployer.address, vault.address, );
   await waitFiveSeconds();
   console.log('1');
 
   await bscl1xContract
   .connect(deployer)
-  .deposit(ethers.utils.parseEther('2000000000'), deployer.address, vault.address, );
+  .deposit(ethers.utils.parseEther('200'), deployer.address, vault.address, );
   await waitFiveSeconds();
   console.log('1');
 
@@ -308,9 +308,9 @@ async function main() {
   let ethUsdcAmountsIn = [];
   for (let i = 0; i < ethUSDCTokenInfo[0].length; i++) {
     if (ethUSDCTokenInfo[0][i] == ethUsdcContract.address) {
-      ethUsdcAmountsIn.push(ethers.utils.parseUnits('1000000000', 18));
+      ethUsdcAmountsIn.push(ethers.utils.parseUnits('100', 18));
     } else if (ethUSDCTokenInfo[0][i] == ethl1xContract.address) {
-      ethUsdcAmountsIn.push(ethers.utils.parseUnits('1000000000', 18));
+      ethUsdcAmountsIn.push(ethers.utils.parseUnits('100', 18));
     } else {
       ethUsdcAmountsIn.push(ethers.utils.parseUnits('0', 18));
     }
@@ -341,9 +341,9 @@ async function main() {
   let ethUsdtAmountsIn = [];
   for (let i = 0; i < ethUSDTTokenInfo[0].length; i++) {
     if (ethUSDTTokenInfo[0][i] == ethUsdtContract.address) {
-      ethUsdtAmountsIn.push(ethers.utils.parseUnits('1000000000', 18));
+      ethUsdtAmountsIn.push(ethers.utils.parseUnits('100', 18));
     } else if (ethUSDTTokenInfo[0][i] == ethl1xContract.address) {
-      ethUsdtAmountsIn.push(ethers.utils.parseUnits('1000000000', 18));
+      ethUsdtAmountsIn.push(ethers.utils.parseUnits('100', 18));
     } else {
       ethUsdtAmountsIn.push(ethers.utils.parseUnits('0', 18));
     }
@@ -371,9 +371,9 @@ async function main() {
   let bscUsdcAmountsIn = [];
   for (let i = 0; i < bscUSDCTokenInfo[0].length; i++) {
     if (bscUSDCTokenInfo[0][i] == bscUsdcContract.address) {
-      bscUsdcAmountsIn.push(ethers.utils.parseUnits('1000000000', 18));
+      bscUsdcAmountsIn.push(ethers.utils.parseUnits('100', 18));
     } else if (bscUSDCTokenInfo[0][i] == bscl1xContract.address) {
-      bscUsdcAmountsIn.push(ethers.utils.parseUnits('1000000000', 18));
+      bscUsdcAmountsIn.push(ethers.utils.parseUnits('100', 18));
     } else {
       bscUsdcAmountsIn.push(ethers.utils.parseUnits('0', 18));
     }
@@ -401,9 +401,9 @@ async function main() {
   let bscUsdtAmountsIn = [];
   for (let i = 0; i < bscUSDTTokenInfo[0].length; i++) {
     if (bscUSDTTokenInfo[0][i] == bscUsdtContract.address) {
-      bscUsdtAmountsIn.push(ethers.utils.parseUnits('1000000000', 18));
+      bscUsdtAmountsIn.push(ethers.utils.parseUnits('100', 18));
     } else if (bscUSDTTokenInfo[0][i] == bscl1xContract.address) {
-      bscUsdtAmountsIn.push(ethers.utils.parseUnits('1000000000', 18));
+      bscUsdtAmountsIn.push(ethers.utils.parseUnits('100', 18));
     } else {
       bscUsdtAmountsIn.push(ethers.utils.parseUnits('0', 18));
     }
