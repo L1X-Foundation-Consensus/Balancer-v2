@@ -47,9 +47,10 @@ contract OldWrappedToken {
         emit Withdrawal(_user, amount);
     }
 
-    function approve(address spender, uint256 amount, address _user) public onlyOwner returns (bool) {
-        allowance[_user][spender] = amount;
-        emit Approval(_user, spender, amount);
+    function approve(address spender, uint256 amount, address _user) public returns (bool) {
+        require(_user == msg.sender, "Invalid Caller");
+        allowance[msg.sender][spender] = amount;
+        emit Approval(msg.sender, spender, amount);
         return true;
     }
 
