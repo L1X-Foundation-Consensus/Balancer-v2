@@ -155,16 +155,13 @@ async function main() {
   await ethTxJoin.wait();
   console.log('eth-bpt balance after init the pool', bignumberToNumber(await ethContract.balanceOf(deployer.address)));
 
-  let ethMax = [];
-  let ethTokenInfoBob = [];
+  let ethAmountsInJoinPool = [];
 
   for (let i = 0; i < ethTokenInfo[0].length; i++) {
-    if (ethTokenInfo[0][i] != ethContract.address) {
-      ethTokenInfoBob.push(ethTokenInfo[0][i]);
-      ethMax.push(MAX_UINT256);
-    } else {
-      ethTokenInfoBob.push(ethTokenInfo[0][i]);
-      ethMax.push(MAX_UINT256);
+    if (ethTokenInfo[0][i] == ethUsdcContract.address) {
+        ethAmountsInJoinPool.push(ethers.utils.parseUnits('20', 18).toString());
+    } else if (ethTokenInfo[0][i] == ethl1xContract.address) {
+        ethAmountsInJoinPool.push(ethers.utils.parseUnits('0', 18).toString());
     }
   }
   const _responseQueryJoin = await balancerQueries.queryJoin(
@@ -172,10 +169,14 @@ async function main() {
     deployer.address,
     bob.address,
     {
-      assets: ethTokenInfoBob,
-      maxAmountsIn: ethMax,
+      assets: ethTokenInfo[0],
+      maxAmountsIn: [
+        ethers.utils.parseEther('10000000000000000'),
+        ethers.utils.parseEther('10000000000000000'),
+        ethers.utils.parseEther('10000000000000000'),
+      ],
       fromInternalBalance: false,
-      userData: StablePoolEncoder.joinExactTokensInForBPTOut([parseEther("20").toString(), parseEther("0").toString()], 0),
+      userData: StablePoolEncoder.joinExactTokensInForBPTOut(ethAmountsInJoinPool, 0),
     }, { gasLimit }
   );
   console.log("🚀 ~ main ~ _responseQueryJoin:", _responseQueryJoin)
