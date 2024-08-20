@@ -103,6 +103,7 @@ async function main() {
   const ethContract = await ContractFactory.deploy(ethPoolParams, { gasLimit });
   console.log('eth-pool deployed to:', ethContract.address);
   await waitFiveSeconds();
+  console.log("vault.address ------------ ", await ethContract.balanceOf(vault.address))
   
   const ethPoolId = await ethContract.getPoolId();
   console.log('eth-pool id', ethPoolId);
@@ -126,16 +127,30 @@ async function main() {
 
   console.log('eth-bpt balance before init the pool', bignumberToNumber(await ethContract.balanceOf(deployer.address)));
 
+
+  let ethValue = 0;
+  let l1xValue = 0;
+  const ethRate = await ethUsdcRateProvider.getRate();
+  const l1xRate = await ethL1xRateProvider.getRate();
+
   let ethAmountsIn = [];
   for (let i = 0; i < ethTokenInfo[0].length; i++) {
     if (ethTokenInfo[0][i] == ethUsdcContract.address) {
       ethAmountsIn.push(ethers.utils.parseUnits('100', 18));
+      ethValue = (ethTokenInfo[1][i] * ethRate) / 1e18;
     } else if (ethTokenInfo[0][i] == ethl1xContract.address) {
       ethAmountsIn.push(ethers.utils.parseUnits('3333', 18));
+      l1xValue = (ethTokenInfo[1][i] * l1xRate) / 1e18;
     } else {
-      ethAmountsIn.push(ethers.utils.parseUnits('0', 18));
+      ethAmountsIn.push(ethers.utils.parseUnits('500', 18));
     }
   }
+  console.log("vault.address ------------ ", await ethContract.balanceOf(vault.address))
+
+
+  const totalPoolValue = ethValue + l1xValue;
+  console.log(`Total Pool Value in USD BEFORE ------: ${totalPoolValue}`);
+
 
   const ethTxJoin = await vault.joinPool(
     ethPoolId, // pool id
@@ -155,15 +170,24 @@ async function main() {
   await ethTxJoin.wait();
   console.log('eth-bpt balance after init the pool', bignumberToNumber(await ethContract.balanceOf(deployer.address)));
 
+  let ethValue1 = 0;
+  let l1xValue1 = 0;
+  const ethRate1 = await ethUsdcRateProvider.getRate();
+  const l1xRate1 = await ethL1xRateProvider.getRate();
   let ethAmountsInJoinPool = [];
 
   for (let i = 0; i < ethTokenInfo[0].length; i++) {
     if (ethTokenInfo[0][i] == ethUsdcContract.address) {
         ethAmountsInJoinPool.push(ethers.utils.parseUnits('20', 18).toString());
+      ethValue1 = (ethTokenInfo[1][i] * ethRate1) / 1e18;
     } else if (ethTokenInfo[0][i] == ethl1xContract.address) {
         ethAmountsInJoinPool.push(ethers.utils.parseUnits('0', 18).toString());
+      l1xValue1 = (ethTokenInfo[1][i] * l1xRate1) / 1e18;
     }
   }
+
+  const totalPoolValue1 = ethValue1 + l1xValue1;
+  console.log(`Total Pool Value in USD AFTER ------ : ${totalPoolValue1}`);
   const _responseQueryJoin = await balancerQueries.queryJoin(
     ethPoolId, // pool id
     deployer.address,
@@ -180,6 +204,7 @@ async function main() {
     }, { gasLimit }
   );
   console.log("🚀 ~ main ~ _responseQueryJoin:", _responseQueryJoin)
+  console.log("vault.address ------------ ", await ethContract.balanceOf(vault.address))
 }
 
 main()
