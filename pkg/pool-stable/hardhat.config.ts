@@ -8,7 +8,7 @@ import { name } from './package.json';
 import { task } from 'hardhat/config';
 import { TASK_COMPILE } from 'hardhat/builtin-tasks/task-names';
 import overrideQueryFunctions from '@balancer-labs/v2-helpers/plugins/overrideQueryFunctions';
-const PRIVATE_KEY = 'c27ef8908116761bfa9a6fe6aaa9e95518f2f00481cbd442f34ca32991a7bc2a';
+const PRIVATE_KEY = 'e8a0649c44208124b3735f05f3f9995fbf8b2361226f4f3cdebd366c170a8bfc';
 const SECOND_PRIVATE_KEY = 'adbb3de1500555c338c22cc5d41b263eb398dc220af8936054d10f7452038a01';
 
 task(TASK_COMPILE).setAction(overrideQueryFunctions);
@@ -18,7 +18,8 @@ export default {
     remote: {
       // url: 'http://35.92.72.139',
       // url: 'https://v2-devnet-rpc.l1x.foundation',
-      url: 'https://testnet-prerelease-rpc.l1x.foundation',
+      // url: 'https://testnet-prerelease-rpc.l1x.foundation',
+      url: 'https://v2-mainnet-rpc.l1x.foundation',
       accounts: [PRIVATE_KEY, SECOND_PRIVATE_KEY],
     },
     remoteAccount2: {

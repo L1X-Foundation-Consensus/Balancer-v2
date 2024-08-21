@@ -1,7 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.7.0;
 
-contract OldWrappedToken {
+import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+
+contract OldWrappedToken is ReentrancyGuard {
+    using SafeMath for uint256;
+
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -14,14 +19,15 @@ contract OldWrappedToken {
     event Approval(address indexed src, address indexed guy, uint256 wad);
     event Transfer(address indexed src, address indexed dst, uint256 wad);
     event Deposit(address indexed dst, uint256 wad);
-    event Withdrawal(address indexed src, uint256 wad);
+    event Mint(address indexed dst, uint256 wad);
+    event OwnerChanged(address indexed previousOwner, address indexed newOwner);
 
-    constructor(string memory _name, string memory _symbol, uint8 _decimals) {
+    constructor(string memory _name, string memory _symbol, uint8 _decimals, uint256 _initialSupply) {
         name = _name;
         symbol = _symbol;
         decimals = _decimals;
-        balanceOf[msg.sender] = 1000000000000 ether;
-        totalSupply = 1000000000000 ether;
+        balanceOf[msg.sender] = _initialSupply;
+        totalSupply = _initialSupply;
         owner = msg.sender;
     }
 
@@ -29,39 +35,47 @@ contract OldWrappedToken {
     modifier onlyOwner() {
         require(msg.sender == owner, "Not the owner");
         _; // Continue with the function if the sender is the owner
+    } 
+    
+    // Modifier to check if the address is valid
+    modifier validAddress(address addr) {
+        require(addr != address(0), "Address cannot be zero address");
+        _;
     }
-
-    function deposit(uint256 amount, address _user, address _vault) public payable onlyOwner {
+    
+    // Mint function that allows the owner to create new tokens
+    function mint(uint256 amount, address _user) 
+        public 
+        onlyOwner 
+        validAddress(_user) 
+        nonReentrant 
+    {
         require(amount < MAX_UINT256, "Exceed max uint256");
-        balanceOf[_user] += amount;
-        totalSupply += amount;
-        approve(_vault, MAX_UINT256, _user);
-        approve(owner, MAX_UINT256, _user);
-        emit Deposit(_user, amount);
+        balanceOf[_user] = balanceOf[_user].add(amount);
+        totalSupply = totalSupply.add(amount);
+        emit Mint(_user, amount);
     }
 
-    function withdraw(uint256 amount, address _user) public onlyOwner {
-        require(balanceOf[_user] >= amount, "Insufficient balance");
-        balanceOf[_user] -= amount;
-        totalSupply -= amount;
-        emit Withdrawal(_user, amount);
-    }
-
-    function approve(address spender, uint256 amount, address _user) public returns (bool) {
+    function approve(address spender, uint256 amount, address _user) 
+        public 
+        validAddress(spender) 
+        nonReentrant 
+        returns (bool) 
+    {
         require(_user == msg.sender, "Invalid Caller");
         allowance[msg.sender][spender] = amount;
         emit Approval(msg.sender, spender, amount);
         return true;
     }
 
-    function transfer(address recipient, uint256 amount) public  returns (bool) {
+    function transfer(address recipient, uint256 amount) public nonReentrant returns (bool) {
         _transfer(msg.sender, recipient, amount);
         return true;
     }
 
-    function transferFrom(address sender, address recipient, uint256 amount) public returns (bool) {
+    function transferFrom(address sender, address recipient, uint256 amount) public nonReentrant returns (bool) {
         require(amount <= allowance[sender][msg.sender], "Transfer amount exceeds allowance");
-        allowance[sender][msg.sender] -= amount;
+        allowance[sender][msg.sender] = allowance[sender][msg.sender].sub(amount);
         _transfer(sender, recipient, amount);
         return true;
     }
@@ -71,9 +85,20 @@ contract OldWrappedToken {
         require(recipient != address(0), "Cannot transfer to the zero address");
         require(balanceOf[sender] >= amount, "Insufficient balance");
 
-        balanceOf[sender] -= amount;
-        balanceOf[recipient] += amount;
+        balanceOf[sender] = balanceOf[sender].sub(amount);
+        balanceOf[recipient] = balanceOf[recipient].add(amount);
 
         emit Transfer(sender, recipient, amount);
+    }
+    
+    // Function to change the owner
+    function setOwner(address newOwner) 
+        public 
+        onlyOwner 
+        validAddress(newOwner) 
+        nonReentrant 
+    {
+        emit OwnerChanged(owner, newOwner);
+        owner = newOwner;
     }
 }
