@@ -1,7 +1,5 @@
 import { StablePoolEncoder } from '@balancer-labs/balancer-js/src/pool-stable/encoder';
-import { MAX_UINT256 } from '@balancer-labs/v2-helpers/src/constants';
 import { fp } from '@balancer-labs/v2-helpers/src/numbers';
-import { parseEther } from 'ethers/lib/utils';
 const { ethers } = require('hardhat');
 
 async function main() {
@@ -70,16 +68,15 @@ async function main() {
   const ethUsdcRateProviderFactory = await ethers.getContractFactory('RateProvider');
   const ethUsdcRateProvider = await ethUsdcRateProviderFactory.deploy({ gasLimit });
   console.log('eth-usdc rate provider deployed to:', ethUsdcRateProvider.address);
-  await ethUsdcRateProvider.updateRate(ethers.utils.parseEther('1'))
+  const usdcRateUpdated = await ethUsdcRateProvider.updateRate(ethers.utils.parseEther('1'))
+  await usdcRateUpdated.wait();
 
   // SET L1X RATE
   const ethL1xRateProviderFactory = await ethers.getContractFactory('RateProvider');
   const ethL1xRateProvider = await ethL1xRateProviderFactory.deploy({ gasLimit });
+  const l1xRateUpdated = await ethL1xRateProvider.updateRate(ethers.utils.parseEther('0.03'))
+  await l1xRateUpdated.wait();
   console.log('eth-l1x rate provider deployed to:', ethL1xRateProvider.address);
-  await ethL1xRateProvider.updateRate(ethers.utils.parseEther('0.03'))
-  
-  console.log([ethUsdcContract.address, ethl1xContract.address].sort());
-  console.log([ethUsdcRateProvider.address, ethL1xRateProvider.address].sort());
 
   const ContractFactory = await ethers.getContractFactory('ComposableStablePool');
 
@@ -102,31 +99,29 @@ async function main() {
 
   const ethContract = await ContractFactory.deploy(ethPoolParams, { gasLimit });
   console.log('eth-pool deployed to:', ethContract.address);
-  await waitFiveSeconds();
   console.log("vault.address ------------ ", await ethContract.balanceOf(vault.address))
   
   const ethPoolId = await ethContract.getPoolId();
   console.log('eth-pool id', ethPoolId);
 
-  await ethUsdcContract
+  const depositUsdcToVault = await ethUsdcContract
     .connect(deployer)
     .deposit(ethers.utils.parseEther('100'), deployer.address, vault.address , { gasLimit });
-  await waitFiveSeconds();
-  console.log('Deposit USDC');
+  await depositUsdcToVault.wait();
+  console.log('Deposit USDC depositUsdcToVault');
 
-  await ethl1xContract
+  const depositL1xToVault = await ethl1xContract
     .connect(deployer)
     .deposit(ethers.utils.parseEther('3333'), deployer.address, vault.address , { gasLimit });
-  await waitFiveSeconds();
-  console.log('Deposit L1X');
+  await depositL1xToVault.wait();
+  console.log('Deposit L1X depositL1xToVault');
 
   let ethTokenInfo = await vault.getPoolTokens(ethPoolId);
   const ethGetpool = await vault.getPool(ethPoolId);
   console.log('eth get pool', ethGetpool);
   console.log('eth pool token address', ethTokenInfo);
 
-  console.log('eth-bpt balance before init the pool', bignumberToNumber(await ethContract.balanceOf(deployer.address)));
-
+  console.log('eth-bpt balance before init the pool', bignumberToNumber(await ethContract.balanceOf(vault.address)));
 
   let ethValue = 0;
   let l1xValue = 0;
@@ -142,9 +137,10 @@ async function main() {
       ethAmountsIn.push(ethers.utils.parseUnits('3333', 18));
       l1xValue = (ethTokenInfo[1][i] * l1xRate) / 1e18;
     } else {
-      ethAmountsIn.push(ethers.utils.parseUnits('500', 18));
+      ethAmountsIn.push(ethers.utils.parseUnits('0', 18));
     }
   }
+  console.log("ethAmountsIn ----------- ", ethAmountsIn);
   console.log("vault.address ------------ ", await ethContract.balanceOf(vault.address))
 
 
@@ -206,8 +202,33 @@ async function main() {
   console.log("🚀 ~ main ~ _responseQueryJoin:", _responseQueryJoin)
   console.log("vault.address ------------ ", await ethContract.balanceOf(vault.address))
 
+  let ethAmountsInJoinPool1 = [];
+  for (let i = 0; i < ethTokenInfo[0].length; i++) {
+    if (ethTokenInfo[0][i] == ethUsdcContract.address) {
+        ethAmountsInJoinPool1.push(ethers.utils.parseUnits('20', 18).toString());
+    } else if (ethTokenInfo[0][i] == ethl1xContract.address) {
+        ethAmountsInJoinPool1.push(ethers.utils.parseUnits('666.66', 18).toString());
+    }
+  }
+  const _responseQueryJoin1 = await balancerQueries.queryJoin(
+    ethPoolId, // pool id
+    bob.address,
+    bob.address,
+    {
+      assets: ethTokenInfo[0],
+      maxAmountsIn: [
+        ethers.utils.parseEther('10000000000000000'),
+        ethers.utils.parseEther('10000000000000000'),
+        ethers.utils.parseEther('10000000000000000'),
+      ],
+      fromInternalBalance: false,
+      userData: StablePoolEncoder.joinExactTokensInForBPTOut(ethAmountsInJoinPool1, 0),
+    }, { gasLimit }
+  );
+  console.log("🚀 ~ main ~ _responseQueryJoin1:", _responseQueryJoin1)
+
   // Query Exit
-  const _exitUserData = StablePoolEncoder.exitExactBptInForTokensOut(parseEther('100'))
+  const _exitUserData = StablePoolEncoder.exitExactBptInForTokensOut(ethers.utils.parseEther('100'))
   const _responseQueryExit = await balancerQueries.queryExit(
     ethPoolId, // pool id
     bob.address,
@@ -225,7 +246,7 @@ async function main() {
   );
   console.log("🚀 ~ main ~ _responseQueryExit:", _responseQueryExit)
 
-  const _exitSingleTokenUserData = StablePoolEncoder.exitExactBPTInForOneTokenOut(parseEther('21.09'), 0)
+  const _exitSingleTokenUserData = StablePoolEncoder.exitExactBPTInForOneTokenOut(ethers.utils.parseEther('21.09'), 0)
   const _responseQueryExitSingleToken = await balancerQueries.queryExit(
     ethPoolId, // pool id
     bob.address,
@@ -241,7 +262,25 @@ async function main() {
       userData: _exitSingleTokenUserData,
     }, { gasLimit }
   );
-  console.log("🚀 ~ main ~ _responseQueryExitSingleToken:", _responseQueryExitSingleToken)
+  console.log("🚀 ~ main ~ _responseQueryExitSingleToken: - Token 1 - ", _responseQueryExitSingleToken)
+
+  const _exitSingleTokenUserData1 = StablePoolEncoder.exitExactBPTInForOneTokenOut(ethers.utils.parseEther('21.09'), 1)
+  const _responseQueryExitSingleToken1 = await balancerQueries.queryExit(
+    ethPoolId, // pool id
+    bob.address,
+    bob.address,
+    {
+      assets: ethTokenInfo[0],
+      minAmountsOut: [
+        0,
+        0,
+        0
+      ],
+      toInternalBalance: false,
+      userData: _exitSingleTokenUserData1,
+    }, { gasLimit }
+  );
+  console.log("🚀 ~ main ~ _responseQueryExitSingleToken1: - Token 2 -", _responseQueryExitSingleToken1)
 }
 
 main()
