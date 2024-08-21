@@ -1,3 +1,4 @@
+import { FundManagement, SwapKind } from '@balancer-labs/balancer-js';
 import { StablePoolEncoder } from '@balancer-labs/balancer-js/src/pool-stable/encoder';
 import { fp } from '@balancer-labs/v2-helpers/src/numbers';
 const { ethers } = require('hardhat');
@@ -281,6 +282,42 @@ async function main() {
     }, { gasLimit }
   );
   console.log("🚀 ~ main ~ _responseQueryExitSingleToken1: - Token 2 -", _responseQueryExitSingleToken1)
+
+  let funds: FundManagement;
+  funds = {
+    sender: bob.address,
+    recipient: bob.address,
+    fromInternalBalance: false,
+    toInternalBalance: false,
+  };
+
+  const _responseQuerySwap = await balancerQueries.querySwap(
+    {
+      poolId: ethPoolId,
+      kind: SwapKind.GivenIn,
+      assetIn: ethUsdcContract.address,
+      assetOut: ethl1xContract.address,
+      amount: ethers.utils.parseEther('20'),
+      userData: '0x',
+    },
+    funds, 
+    { gasLimit }
+  );
+  console.log("🚀 ~ main ~ _responseQuerySwap: USDC -> L1X", _responseQuerySwap)
+
+  const _responseQuerySwap1 = await balancerQueries.querySwap(
+    {
+      poolId: ethPoolId,
+      kind: SwapKind.GivenIn,
+      assetIn: ethl1xContract.address,
+      assetOut: ethUsdcContract.address,
+      amount: ethers.utils.parseEther('666.66'),
+      userData: '0x',
+    },
+    funds, 
+    { gasLimit }
+  );
+  console.log("🚀 ~ main ~ _responseQuerySwap1: L1X -> USDC", _responseQuerySwap1)
 }
 
 main()
