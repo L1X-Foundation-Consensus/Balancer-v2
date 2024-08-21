@@ -190,7 +190,7 @@ async function main() {
   console.log(`Total Pool Value in USD AFTER ------ : ${totalPoolValue1}`);
   const _responseQueryJoin = await balancerQueries.queryJoin(
     ethPoolId, // pool id
-    deployer.address,
+    bob.address,
     bob.address,
     {
       assets: ethTokenInfo[0],
@@ -205,6 +205,43 @@ async function main() {
   );
   console.log("🚀 ~ main ~ _responseQueryJoin:", _responseQueryJoin)
   console.log("vault.address ------------ ", await ethContract.balanceOf(vault.address))
+
+  // Query Exit
+  const _exitUserData = StablePoolEncoder.exitExactBptInForTokensOut(parseEther('100'))
+  const _responseQueryExit = await balancerQueries.queryExit(
+    ethPoolId, // pool id
+    bob.address,
+    bob.address,
+    {
+      assets: ethTokenInfo[0],
+      minAmountsOut: [
+        0,
+        0,
+        0
+      ],
+      toInternalBalance: false,
+      userData: _exitUserData,
+    }, { gasLimit }
+  );
+  console.log("🚀 ~ main ~ _responseQueryExit:", _responseQueryExit)
+
+  const _exitSingleTokenUserData = StablePoolEncoder.exitExactBPTInForOneTokenOut(parseEther('21.09'), 0)
+  const _responseQueryExitSingleToken = await balancerQueries.queryExit(
+    ethPoolId, // pool id
+    bob.address,
+    bob.address,
+    {
+      assets: ethTokenInfo[0],
+      minAmountsOut: [
+        0,
+        0,
+        0
+      ],
+      toInternalBalance: false,
+      userData: _exitSingleTokenUserData,
+    }, { gasLimit }
+  );
+  console.log("🚀 ~ main ~ _responseQueryExitSingleToken:", _responseQueryExitSingleToken)
 }
 
 main()
