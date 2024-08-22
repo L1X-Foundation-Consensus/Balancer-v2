@@ -248,6 +248,8 @@ __metadata:
 "@balancer-labs/v2-monorepo@workspace:.":
   version: 0.0.0-use.local
   resolution: "@balancer-labs/v2-monorepo@workspace:."
+  dependencies:
+    "@openzeppelin/contracts": "npm:3.1.0-solc-0.7"
   languageName: unknown
   linkType: soft
 
@@ -304,6 +306,7 @@ __metadata:
     "@balancer-labs/v2-solidity-utils": "workspace:*"
     "@nomiclabs/hardhat-ethers": "npm:^2.2.1"
     "@nomiclabs/hardhat-waffle": "npm:^2.0.3"
+    "@openzeppelin/contracts": "npm:3.1.0-solc-0.7"
     "@types/chai": "npm:^4.3.3"
     "@types/lodash": "npm:^4.14.186"
     "@types/mocha": "npm:^10.0.0"
@@ -1584,6 +1587,13 @@ __metadata:
     mkdirp: "npm:^1.0.4"
     rimraf: "npm:^3.0.2"
   checksum: 3557a12cd18dfb5bcd5d5cf910b783832af50ffba28fd5bb510c3c56b2df0481558b9ec6d3008e8eeefb9f2944bdc1d34832b1a8bbf6ad1cd2f256bf12c84ff0
+  languageName: node
+  linkType: hard
+
+"@openzeppelin/contracts@npm:3.1.0-solc-0.7":
+  version: 3.1.0-solc-0.7
+  resolution: "@openzeppelin/contracts@npm:3.1.0-solc-0.7"
+  checksum: 98f5a42eb8ceca80659a7989a0be8e21ac61d16d7f349f9720035693d8c1d8519834da2df06d9a8cb29ea5816712af797757a702064d9fce4f1368295bca5d9f
   languageName: node
   linkType: hard
 

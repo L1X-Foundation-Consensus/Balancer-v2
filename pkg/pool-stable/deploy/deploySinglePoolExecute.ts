@@ -7,27 +7,27 @@ async function main() {
   const signers = await ethers.getSigners();
   const deployer = signers[0];
   const bob = signers[1];
-  const gasLimit = undefined; // 5 gwei
+  const gasLimit = ethers.utils.parseUnits("200", 'gwei'); // 5 gwei
 
   console.log('Deploying contracts with the account:', deployer.address);
 
-  const erc20Factory = await ethers.getContractFactory('OldWrappedToken');
+  const erc20Factory = await ethers.getContractFactory('L1X_EVM_TOKEN');
 
   const ethUsdcParam = {
     _name: 'eth-USDC',
     _symbol: 'eth-USDC',
     _decimals: 18,
-    _initialSupply: ethers.utils.parseEther("1000"),
+    _initialSupply: 100000,
   };
   const ethUsdcContract = await erc20Factory.deploy(ethUsdcParam._name, ethUsdcParam._symbol, ethUsdcParam._decimals, ethUsdcParam._initialSupply, { gasLimit });
-
   console.log('Contract eth-USDC deployed to:', ethUsdcContract.address);
+  console.log("ethUsdcContracts.address ------------ ", await ethUsdcContract.balanceOf(deployer.address))
 
   const ethL1xParam = {
     _name: 'eth-L1X',
     _symbol: 'eth-L1X',
     _decimals: 18,
-    _initialSupply: ethers.utils.parseEther("10000"),
+    _initialSupply: 100000,
   };
   const ethl1xContract = await erc20Factory.deploy(ethL1xParam._name, ethL1xParam._symbol, ethL1xParam._decimals, ethL1xParam._initialSupply, { gasLimit });
 
@@ -107,12 +107,14 @@ async function main() {
   const ethPoolId = await ethContract.getPoolId();
   console.log('eth-pool id', ethPoolId);
 
+  console.log("ethUsdcContract.address ------------ ", await ethUsdcContract.balanceOf(deployer.address))
   const transferUsdcToVault = await ethUsdcContract
     .connect(deployer)
     .transfer(vault.address, ethers.utils.parseEther('100'), { gasLimit });
   await transferUsdcToVault.wait();
   console.log('Deposit USDC depositUsdcToVault');
   
+  console.log("ethl1xContract.address ------------ ", await ethl1xContract.balanceOf(deployer.address))
   const transferL1xToVault = await ethl1xContract
     .connect(deployer)
     .transfer(vault.address, ethers.utils.parseEther('6666.66'), { gasLimit });
@@ -121,13 +123,13 @@ async function main() {
 
   // const depositUsdcToVault = await ethUsdcContract
   //   .connect(deployer)
-  //   .deposit(ethers.utils.parseEther('100'), deployer.address, vault.address, { gasLimit });
+  //   .deposit(ethers.utils.parseEther('100'), vault.address, { gasLimit });
   // await depositUsdcToVault.wait();
   // console.log('Deposit USDC depositUsdcToVault');
 
   // const depositL1xToVault = await ethl1xContract
   //   .connect(deployer)
-  //   .deposit(ethers.utils.parseEther('3333'), deployer.address, vault.address, { gasLimit });
+  //   .deposit(ethers.utils.parseEther('3333'), vault.address, { gasLimit });
   // await depositL1xToVault.wait();
   // console.log('Deposit L1X depositL1xToVault');
 
@@ -168,13 +170,13 @@ async function main() {
 
   const approveUsdcToVault = await ethUsdcContract
     .connect(deployer)
-    .approve(vault.address, ethers.utils.parseEther('100'), deployer.address, { gasLimit });
+    .approve(vault.address, ethers.utils.parseEther('100'), { gasLimit });
   await approveUsdcToVault.wait();
   console.log('Approve USDC depositUsdcToVault');
   
   const approveL1xToVault = await ethl1xContract
     .connect(deployer)
-    .approve(vault.address, ethers.utils.parseEther('6666.66'), deployer.address, { gasLimit });
+    .approve(vault.address, ethers.utils.parseEther('6666.66'), { gasLimit });
   await approveL1xToVault.wait();
   console.log('Approve L1X depositL1xToVault');
 
@@ -242,7 +244,7 @@ async function main() {
 
   const approveUsdcToPool = await ethUsdcContract
     .connect(deployer)
-    .approve(vault.address, ethers.utils.parseEther('20'), deployer.address, { gasLimit });
+    .approve(vault.address, ethers.utils.parseEther('20'), { gasLimit });
   await approveUsdcToPool.wait();
   console.log('Approve USDC depositUsdcToVault');
 
@@ -413,7 +415,7 @@ async function main() {
 
   const approveUsdcToSwap = await ethUsdcContract
     .connect(deployer)
-    .approve(vault.address, ethers.utils.parseEther('10'), deployer.address, { gasLimit });
+    .approve(vault.address, ethers.utils.parseEther('10'), { gasLimit });
   await approveUsdcToSwap.wait();
   console.log('Approve USDC depositUsdcToVault');
 
