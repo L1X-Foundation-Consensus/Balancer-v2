@@ -1,5 +1,5 @@
 const { ethers } = require('hardhat');
-import abi from '/home/nitish/Desktop/l1x-balancer-v2/pkg/pool-stable/artifacts/contracts/RateProvider.sol/RateProvider.json';
+import abi from '../../artifacts/contracts/RateProvider.sol/RateProvider.json';
 
 async function main() {
   const signers = await ethers.getSigners();
@@ -7,19 +7,19 @@ async function main() {
   console.log('Deploying contracts with the account:', deployer.address);
 
   const tokens = [
-    { _name: 'ZDX', _symbol: 'ZDX', decimals: 18, totalSupply: 15000000, price: 0.03, deployerKey: process.env.DEPLOYER_L1XEVM },
-    // { _name: 'L1XEVM', _symbol: 'L1XEVM', decimals: 18, totalSupply: 10000000, price: 0.02632, deployerKey: process.env.DEPLOYER_L1XEVM },
+    // { _name: 'ZDX', _symbol: 'ZDX', decimals: 18, totalSupply: 15000000, price: 0.03, deployerKey: process.env.DEPLOYER_L1XEVM },
+    // { _name: 'L1XEVM', _symbol: 'L1XEVM', decimals: 18, totalSupply: 15000000, price: 0.02632, deployerKey: process.env.DEPLOYER_L1XEVM },
     // { _name: 'L1XETH', _symbol: 'L1XETH', decimals: 18, totalSupply: 100000, price: 2629.19, deployerKey: process.env.DEPLOYER_L1XETH },
-    { _name: 'L1XETHUSDC', _symbol: 'L1XETHUSDC', decimals: 18, totalSupply: 15000000, price: 1, deployerKey: process.env.DEPLOYER_L1XETH },
+    // { _name: 'L1XETHUSDC', _symbol: 'L1XETHUSDC', decimals: 18, totalSupply: 15000000, price: 1, deployerKey: process.env.DEPLOYER_L1XETH },
     // { _name: 'L1XETHUSDT', _symbol: 'L1XETHUSDT', decimals: 18, totalSupply: 10000000, price: 1, deployerKey: process.env.DEPLOYER_L1XETH },
     // { _name: 'L1XBSC', _symbol: 'L1XBSC', decimals: 18, totalSupply: 100000, price: 576.2, deployerKey: process.env.DEPLOYER_L1XBSC },
     // { _name: 'L1XBSCUSDC', _symbol: 'L1XBSCUSDC', decimals: 18, totalSupply: 10000000, price: 1, deployerKey: process.env.DEPLOYER_L1XBSC },
-    { _name: 'L1XBSCUSDT', _symbol: 'L1XBSCUSDT', decimals: 18, totalSupply: 15000000, price: 1, deployerKey: process.env.DEPLOYER_L1XBSC },
+    // { _name: 'L1XBSCUSDT', _symbol: 'L1XBSCUSDT', decimals: 18, totalSupply: 15000000, price: 1, deployerKey: process.env.DEPLOYER_L1XBSC },
     // { _name: 'L1XMATIC', _symbol: 'L1XMATIC', decimals: 18, totalSupply: 100000, price: 0.5192, deployerKey: process.env.DEPLOYER_L1XMATIC },
     // { _name: 'L1XMATICUSDC', _symbol: 'L1XMATICUSDC', decimals: 18, totalSupply: 10000000, price: 1, deployerKey: process.env.DEPLOYER_L1XMATIC },
     // { _name: 'L1XMATICUSDT', _symbol: 'L1XMATICUSDT', decimals: 18, totalSupply: 10000000, price: 1, deployerKey: process.env.DEPLOYER_L1XMATIC },
     // { _name: 'L1XAVAX', _symbol: 'L1XAVAX', decimals: 18, totalSupply: 100000, price: 23.27, deployerKey: process.env.DEPLOYER_L1XAVAX },
-    // { _name: 'L1XAVAXUSDC', _symbol: 'L1XAVAXUSDC', decimals: 18, totalSupply: 10000000, price: 1, deployerKey: process.env.DEPLOYER_L1XAVAX },
+    { _name: 'L1XAVAXUSDC', _symbol: 'L1XAVAXUSDC', decimals: 18, totalSupply: 15000000, price: 1, deployerKey: process.env.DEPLOYER_L1XAVAX },
     // { _name: 'L1XAVAXUSDT', _symbol: 'L1XAVAXUSDT', decimals: 18, totalSupply: 10000000, price: 1, deployerKey: process.env.DEPLOYER_L1XAVAX },
     // { _name: 'L1XARBETH', _symbol: 'L1XARBETH', decimals: 18, totalSupply: 100000, price: 2629.19, deployerKey: process.env.DEPLOYER_L1XARBETH },
     // { _name: 'L1XARBUSDC', _symbol: 'L1XARBUSDC', decimals: 18, totalSupply: 10000000, price: 1, deployerKey: process.env.DEPLOYER_L1XARBETH },
@@ -28,7 +28,7 @@ async function main() {
     // { _name: 'L1XOPTUSDC', _symbol: 'L1XOPTUSDC', decimals: 18, totalSupply: 10000000, price: 1, deployerKey: process.env.DEPLOYER_L1XOPTETH },
     // { _name: 'L1XOPTUSDT', _symbol: 'L1XOPTUSDT', decimals: 18, totalSupply: 10000000, price: 1, deployerKey: process.env.DEPLOYER_L1XOPTETH },
     // { _name: 'L1XSOL', _symbol: 'L1XSOL', decimals: 18, totalSupply: 100000, price: 142.97, deployerKey: process.env.DEPLOYER_L1XSOL },
-    { _name: 'L1XSOLUSDC', _symbol: 'L1XSOLUSDC', decimals: 18, totalSupply: 15000000, price: 1, deployerKey: process.env.DEPLOYER_L1XSOL },
+    // { _name: 'L1XSOLUSDC', _symbol: 'L1XSOLUSDC', decimals: 18, totalSupply: 15000000, price: 1, deployerKey: process.env.DEPLOYER_L1XSOL },
     // { _name: 'L1XSOLUSDT', _symbol: 'L1XSOLUSDT', decimals: 18, totalSupply: 10000000, price: 1, deployerKey: process.env.DEPLOYER_L1XSOL },
   ];
 
@@ -41,14 +41,42 @@ async function main() {
     console.log(token._name);
 
     const erc20Factory = await ethers.getContractFactory('L1X_EVM_TOKEN');
-    const tokenContract = await erc20Factory.connect(signer).deploy(token._name, token._symbol, token.decimals, token.totalSupply);
-    await tokenContract.deployed();
+    let tokenContract = null;
+    let txDeployedHash = null
+    let deployCount = 1
+
+    do{
+      tokenContract = await erc20Factory.connect(signer).deploy(token._name, token._symbol, token.decimals, token.totalSupply);
+      
+     
+      const txDeployed  = await tokenContract.deployed();
+      await txDeployed.deployTransaction.wait();
+      txDeployedHash = txDeployed.deployTransaction.hash;
+
+      console.log("Tx Hash: ",txDeployedHash);
+
+      console.log("Deploy Count ",deployCount);
+      await waitFiveSeconds();
+      deployCount++;
+
+    }while(txDeployedHash == null)
+    
+    
+      // return;
+    // await waitFiveSeconds();
     console.log(`Token deployed to:`, tokenContract.address, `, Owner: `, await tokenContract.owner());
+
+
+    // Transfer 10% of Initial Supply to Deployer
+    const tenPercentSupply = Math.ceil((token.totalSupply * 10) / 100) ;
+    const transferResponse = await tokenContract.transfer(deployer.address,ethers.utils.parseEther(tenPercentSupply.toString()));
+    await transferResponse.wait();
 
     const erc20RateProviderFactory = await ethers.getContractFactory('RateProvider');
     const tokenRateProviderContract = await erc20RateProviderFactory.deploy();
     await tokenRateProviderContract.deployed();
-    console.log(`Rate provider deployed to:`, tokenRateProviderContract.address);
+    // console.log(`Rate provider deployed to:`, tokenRateProviderContract.address);
+    console.log(`Rate provider deployed to:`, tokenRateProviderContract.address, `, Owner: `, await tokenRateProviderContract.owner());
     const l1xRateUpdated = await tokenRateProviderContract.updateRate(ethers.utils.parseEther(token.price+""))
     await l1xRateUpdated.wait();
     console.log(`Price: `, token.price, ` - `, (await tokenRateProviderContract.getRate())?.toString());
@@ -60,3 +88,11 @@ main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
+
+function waitFiveSeconds() {
+  return new Promise<void>((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, 10000);
+  });
+}

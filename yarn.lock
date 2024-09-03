@@ -32,7 +32,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@balancer-labs/balancer-js@workspace:*, @balancer-labs/balancer-js@workspace:pkg/balancer-js":
+"@balancer-labs/balancer-js@workspace:*, @balancer-labs/balancer-js@workspace:^, @balancer-labs/balancer-js@workspace:pkg/balancer-js":
   version: 0.0.0-use.local
   resolution: "@balancer-labs/balancer-js@workspace:pkg/balancer-js"
   dependencies:
@@ -299,6 +299,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@balancer-labs/v2-pool-stable@workspace:pkg/pool-stable"
   dependencies:
+    "@balancer-labs/balancer-js": "workspace:^"
     "@balancer-labs/v2-common": "workspace:*"
     "@balancer-labs/v2-helpers": "workspace:*"
     "@balancer-labs/v2-interfaces": "workspace:*"
