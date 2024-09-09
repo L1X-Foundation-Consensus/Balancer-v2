@@ -20,16 +20,39 @@ import "@balancer-labs/v2-solidity-utils/contracts/math/FixedPoint.sol";
 
 contract RateProvider is IRateProvider {
     uint256 public rate;
+    address public owner;
+
+    mapping(address => bool) public authCaller;
 
     constructor() {
         rate = FixedPoint.ONE;
+        owner = msg.sender;
     }
+
+    modifier onlyOwner(){
+        require(msg.sender == owner,"Only Owner Can Call this");
+        _;
+    }
+
+    modifier onlyAuth(){
+        require(msg.sender == owner || authCaller[msg.sender] == true,"Only Auth Caller Can Call this");
+        _;
+    }
+
 
     function getRate() external view override returns (uint256) {
         return rate;
     }
 
-    function updateRate(uint256 newRate) external {
+    function updateRate(uint256 newRate) external onlyAuth {
         rate = newRate;
+    }
+
+    function updateAuthCaller(address caller, bool status) onlyOwner public {
+            authCaller[caller] = status;
+    } 
+
+    function transferOwnership(address newOwner) onlyOwner public {
+        owner = newOwner;
     }
 }

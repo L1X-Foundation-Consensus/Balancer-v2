@@ -5,7 +5,7 @@ import { StablePoolEncoder } from '@balancer-labs/balancer-js/src/pool-stable/en
 import fs from 'fs';
 import { fp } from '@balancer-labs/v2-helpers/src/numbers';
 import { getPoolInstance } from './tool';
-import { FundManagement, SwapKind } from './../../balancer-js/src';
+import { FundManagement, SwapKind } from '@balancer-labs/balancer-js/src';
 import { MAX_UINT256, ZERO_ADDRESS } from '@balancer-labs/v2-helpers/src/constants';
 import { zeroPad } from 'ethers/lib/utils';
 export const filePath = './deploy/input.json';
