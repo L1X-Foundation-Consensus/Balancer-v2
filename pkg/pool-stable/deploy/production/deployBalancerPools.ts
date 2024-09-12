@@ -3,6 +3,7 @@ import { fp } from '@balancer-labs/v2-helpers/src/numbers';
 const { ethers } = require('hardhat');
 const fs = require("fs");
 
+// 166666666 > 500000 / 0.003
 const POOLS_TO_DEPLOY = [
   // {
   //   name: 'L1XSOLUSDC-L1XETHUSDC-POOL',
@@ -30,36 +31,50 @@ const POOLS_TO_DEPLOY = [
   //   symbol: 'ETHUSDZDX',
   //   tokens: ["0x3034d7160040936398a240d5Cf990496869eFE87", "0x4523258C90Fa91E834f10394f89f859aA1EfDF10"],
   //   rateProviders: ["0x5a84ad69EcFD52B7988D5b2064d408C77b85d473", "0x42fA88a53dff1231d82a987849c7543b96E0648f"],
-  //   initialLiquidity: [500000, 500000]
+  //   initialLiquidity: [500000, 16666666]
   // },
   // {
   //   name: 'BSCUSDZDX',
   //   symbol: 'BSCUSDZDX',
   //   tokens: ["0x4523258C90Fa91E834f10394f89f859aA1EfDF10","0x5cD9269A8914a000a85d8f3f4C0702ce79eFbd2a"],
   //   rateProviders: ["0x42fA88a53dff1231d82a987849c7543b96E0648f","0xBfB7De31D0419f5736703CeBac0AB5a844A83242"],
-  //   initialLiquidity: [500000, 500000]
+  //   initialLiquidity: [16666666, 500000]
   // },
   // {
   //   name: 'SOLUSDZDX',
   //   symbol: 'SOLUSDZDX',
   //   tokens: ["0x2E3aB08BC67B858dB28c4849a0C755eA63978D1E", "0x4523258C90Fa91E834f10394f89f859aA1EfDF10"],
   //   rateProviders: ["0x301F8635A2Ae12005518c41B5Acc4FfE4eCe6e4f", "0x42fA88a53dff1231d82a987849c7543b96E0648f"],
-  //   initialLiquidity: [500000, 500000]
+  //   initialLiquidity: [500000, 16666666]
   // },
-  {
-    name: 'AVAUSDZDX',
-    symbol: 'AVAUSDZDX',
-    tokens: ["0x4523258C90Fa91E834f10394f89f859aA1EfDF10","0xa23127a1F5614d3f621d18B8F09e5679B1d14753"],
-    rateProviders: ["0x42fA88a53dff1231d82a987849c7543b96E0648f","0xa2169e6c037b1D04ABb14050D12Cf2b616bEE162"],
-    initialLiquidity: [500000, 500000]
-  },
+  // {
+  //   name: 'AVAUSDZDX',
+  //   symbol: 'AVAUSDZDX',
+  //   tokens: ["0x4523258C90Fa91E834f10394f89f859aA1EfDF10","0xa23127a1F5614d3f621d18B8F09e5679B1d14753"],
+  //   rateProviders: ["0x42fA88a53dff1231d82a987849c7543b96E0648f","0xa2169e6c037b1D04ABb14050D12Cf2b616bEE162"],
+  //   initialLiquidity: [16666666, 500000]
+  // },
   // {
   //   name: 'L1XZDX',
   //   symbol: 'L1XZDX',
-  //   tokens: ["0x39E96F7dEb7398E5D43Bcdfe05740Ae398925f22", "0x4523258C90Fa91E834f10394f89f859aA1EfDF10"],
-  //   rateProviders: ["0xE847c13a71fE7a16A86F350fd09dec5575C0fc3E", "0x42fA88a53dff1231d82a987849c7543b96E0648f"],
-  //   initialLiquidity: [500000, 500000]
+  //   tokens: ["0x39E96F7dEb7398E5D43Bcdfe05740Ae398925f22","0x4523258C90Fa91E834f10394f89f859aA1EfDF10"],
+  //   rateProviders: ["0xE847c13a71fE7a16A86F350fd09dec5575C0fc3E","0x42fA88a53dff1231d82a987849c7543b96E0648f"],
+  //   initialLiquidity: [18566654, 16666666]
+  // },
+  // {
+  //   name: 'ETHUSDSZDX',
+  //   symbol: 'ETHUSDCSZDX',
+  //   tokens: ["0x3034d7160040936398a240d5Cf990496869eFE87","0x71D0b3950f4AF784Eeb12e49d4bB9207bB56adA4"],
+  //   rateProviders: ["0x5a84ad69EcFD52B7988D5b2064d408C77b85d473","0x6AE8D467fBE634e161d34CfF22F478cb0a4CD59d"],
+  //   initialLiquidity: [1000, 33333]
   // }
+  {
+    name: 'BSCUSDSZDX',
+    symbol: 'BSCUSDSZDX',
+    tokens: ["0x5cD9269A8914a000a85d8f3f4C0702ce79eFbd2a","0x71D0b3950f4AF784Eeb12e49d4bB9207bB56adA4"],
+    rateProviders: ["0xBfB7De31D0419f5736703CeBac0AB5a844A83242","0x6AE8D467fBE634e161d34CfF22F478cb0a4CD59d"],
+    initialLiquidity: [1000, 33333]
+  }
 ]
 
 const balancerAddress = "0x949039227793f39014572dD495B5C88Dad5cAB62";
